@@ -36,6 +36,7 @@ public class Mine extends Panels implements ActionListener {
 
     // About
     JMenu     menuMore = new JMenu("Още");
+    JMenuItem menuMoreSettings = new JMenuItem("Настройки");
     JMenuItem menuMoreAbout = new JMenuItem("Относно програмата");
 
     //endregion
@@ -109,9 +110,11 @@ public class Mine extends Panels implements ActionListener {
         //region Menu - more
 
         // Add listeners
+        menuMoreSettings.addActionListener(this);
         menuMoreAbout.addActionListener(this);
 
         // Add options
+        menuMore.add(menuMoreSettings);
         menuMore.add(menuMoreAbout);
 
         // Add menu
@@ -173,6 +176,14 @@ public class Mine extends Panels implements ActionListener {
             int xStart = frame.getX() + (frame.getWidth() / 2);
             int yStart = frame.getY() + (frame.getHeight() / 2);
             new VehicleSearch(xStart, yStart);
+
+        }
+
+        if (e.getSource() == menuMoreSettings) {
+
+            int xStart = frame.getX() + (frame.getWidth() / 2);
+            int yStart = frame.getY() + (frame.getHeight() / 2);
+            new Settings(xStart, yStart);
 
         }
 
