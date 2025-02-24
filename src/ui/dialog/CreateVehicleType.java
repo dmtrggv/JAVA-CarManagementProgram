@@ -57,6 +57,7 @@ public class CreateVehicleType extends Panels implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        // Create car
         if (e.getSource() == createCar) {
 
             if (Files.garageFileExists(Mine.currentUser.getUsername())) {
@@ -69,7 +70,10 @@ public class CreateVehicleType extends Panels implements ActionListener {
                 JOptionPane.showMessageDialog(frame, "Няма нито един намерен гараж!\nДобавете поне един гараж, преди да продължите.");
             }
 
-        } else if (e.getSource() == createMotor) {
+        }
+
+        // Create motor
+        if (e.getSource() == createMotor) {
             JOptionPane.showMessageDialog(frame, "Все още няма функционалност за това :)");
         }
 
