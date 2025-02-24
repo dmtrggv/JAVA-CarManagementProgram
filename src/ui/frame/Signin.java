@@ -4,6 +4,7 @@ import components.User;
 import ui.dialog.VerifyAdmin;
 import ui.Panels;
 import use.Constants;
+import use.DBFiles;
 import use.Files;
 
 import javax.swing.*;
@@ -97,7 +98,6 @@ public class Signin extends Panels implements ActionListener {
         frame.setVisible(true);
         updateCreatorPosition(panel);
 
-        JOptionPane.showMessageDialog(frame, "Има готов потребител:\n - user: pu.fmi\n - pass: fmi\nНо ако искаш, създай нов потребтел и почни отначало");
     }
 
     private void updateCreatorPosition(JPanel panel) {
@@ -130,24 +130,38 @@ public class Signin extends Panels implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
+        // View password checkbox
         if (e.getSource() == viewPassword) {
-            if (txPassword.getEchoChar() == (char) 0) {
-                txPassword.setEchoChar('*');
-            } else {
-                txPassword.setEchoChar((char) 0);
-            }
-        } if (e.getSource() == buttLogin) {
+
+            if (txPassword.getEchoChar() == (char) 0) txPassword.setEchoChar('*');
+            else txPassword.setEchoChar((char) 0);
+
+        }
+
+        // Login
+        if (e.getSource() == buttLogin) {
+
             if (!txUsername.getText().isEmpty() && !new String(txPassword.getPassword()).isEmpty()) {
-                User user = Files.loadUser(txUsername.getText(), new String(txPassword.getPassword()));
+
+                User user = DBFiles.user.loadUser(txUsername.getText(), new String(txPassword.getPassword()));
+
                 if (user != null) {
                     new Mine(user);
                     frame.dispose();
-                } else JOptionPane.showMessageDialog(frame, "Грешен потребител!");
+                }
+
             } else JOptionPane.showMessageDialog(frame, "Полетата са задължителни!");
-        } else if (e.getSource() == buttCreateAccount) {
+
+        }
+
+        // Register new user
+        if (e.getSource() == buttCreateAccount) {
+
             int xStart = (frame.getX() + frame.getWidth()) / 2;
             int yStart = ((frame.getY() + frame.getHeight()) / 2) + 50;
             new VerifyAdmin(xStart, yStart, frame, "register");
+
         }
     }
 }

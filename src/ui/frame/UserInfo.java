@@ -2,10 +2,8 @@ package ui.frame;
 
 import components.User;
 import ui.Panels;
-import use.Address;
-import use.Constants;
-import use.Files;
-import use.NumericDocumentFilter;
+import use.*;
+
 import javax.swing.*;
 import javax.swing.text.AbstractDocument;
 import java.awt.*;
@@ -227,6 +225,7 @@ public class UserInfo extends Panels implements ActionListener {
     }
 
     private void handleUserRegistration() {
+
         // Create a new User object
         User user = new User(
                 txUsername.getText(),
@@ -244,13 +243,17 @@ public class UserInfo extends Panels implements ActionListener {
         );
 
         // Save user and transition to sign-in screen
-        Files.saveUser(user);
+        DBFiles.user.saveUser(user);
         JOptionPane.showMessageDialog(frame, "Регистрацията е успешна!", "Успех", JOptionPane.INFORMATION_MESSAGE);
+
+        // Change frame
         new Signin();
         frame.dispose();
+
     }
 
     private void handleUserUpdate() {
+
         // Create a new User object
         User user = new User(
                 txUsername.getText(),
@@ -268,9 +271,9 @@ public class UserInfo extends Panels implements ActionListener {
         );
 
         // Save user and transition to sign-in screen
-        Files.saveUser(user);
+        DBFiles.user.updateUser(user);
         Mine.currentUser = user;
-        JOptionPane.showMessageDialog(frame, "Промените са успешни!", "Успех", JOptionPane.INFORMATION_MESSAGE);
+
     }
 
     private boolean isValidInput() {
@@ -296,20 +299,26 @@ public class UserInfo extends Panels implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
+        // Register new user
         if (e.getSource() == btnRegister) {
+
             if (isValidInput()) {
-                if (txUsername.getText() != null && Files.usernameExists(txUsername.getText())) {
+
+                if (txUsername.getText() != null && DBFiles.user.usernameExists(txUsername.getText())) {
                     JOptionPane.showMessageDialog(frame, "Това потребителско име вече съществува!\nМоля, избери друго уникално име за този профил :)");
                 } else handleUserRegistration();
-            } else {
-                JOptionPane.showMessageDialog(frame, "Моля, попълнете всички полета и проверете дали паролите съвпадат.", "Грешка", JOptionPane.ERROR_MESSAGE);
-            }
-        } else if (e.getSource() == btnSave) {
-            if (isValidInput()) {
-                handleUserUpdate();
-            } else {
-                JOptionPane.showMessageDialog(frame, "Моля, попълнете всички полета и проверете дали паролите съвпадат.", "Грешка", JOptionPane.ERROR_MESSAGE);
-            }
+
+            } else JOptionPane.showMessageDialog(frame, "Моля, попълнете всички полета и проверете дали паролите съвпадат.", "Грешка", JOptionPane.ERROR_MESSAGE);
+
+        }
+
+        // Save existing user
+        if (e.getSource() == btnSave) {
+
+            if (isValidInput()) handleUserUpdate();
+            else JOptionPane.showMessageDialog(frame, "Моля, попълнете всички полета и проверете дали паролите съвпадат.", "Грешка", JOptionPane.ERROR_MESSAGE);
+
         }
     }
 

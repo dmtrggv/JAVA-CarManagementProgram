@@ -9,8 +9,6 @@ import java.util.*;
 
 public class Files {
 
-    // This Class is from the Invisible Library project - check it out
-
     // Get working directory
     public static String getFileDirectory() {
         String projectRoot = System.getProperty("user.dir");
