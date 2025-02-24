@@ -10,7 +10,6 @@ public class User {
     private String nameLast;
     private Address address;
     private String info;
-    private String dbPath;
 
     public User(User user) {
         this.username = user.getUsername();
@@ -60,10 +59,6 @@ public class User {
         return info;
     }
 
-    public String getDbPath() {
-        return dbPath;
-    }
-
     //endregion
 
     //region Setters
@@ -95,10 +90,6 @@ public class User {
 
     public void setInfo(String info) {
         this.info = info;
-    }
-
-    public void setDbPath(String dbPath) {
-        this.dbPath = dbPath;
     }
 
     //endregion

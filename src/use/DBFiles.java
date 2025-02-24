@@ -1,9 +1,11 @@
 package use;
 
+import components.Car;
 import components.User;
 import org.h2.jdbcx.JdbcConnectionPool;
 
 import javax.swing.*;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,8 +13,41 @@ import java.sql.SQLException;
 
 public class DBFiles {
 
-    // private static final JdbcConnectionPool CONNECTION_POOL = JdbcConnectionPool.create(Mine.currentUser.getDbPath(), "sa", "0000");
-    private static final JdbcConnectionPool CONNECTION_POOL = JdbcConnectionPool.create("jdbc:h2:D:\\db\\test", "sa", "0");
+    // Get connection pool
+    private static JdbcConnectionPool CONNECTION_POOL;
+    static {
+        try {
+            String[] config = configuration.Load();
+            CONNECTION_POOL = JdbcConnectionPool.create(config[0], config[1], config[2]);
+        } catch (IOException e) {
+            CONNECTION_POOL = JdbcConnectionPool.create("jdbc:h2:~\\test", "sa", "");
+        }
+    }
+
+    // Configurations
+    public static class configuration {
+
+        public static String[] Load() throws IOException {
+
+            String filePath = Files.getFileDirectory() + "\\db-configurations";
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+                return reader.readLine().split(", ");
+            }
+
+        }
+
+        public static void Update(String path, String user, String pass) throws IOException {
+
+            String filePath = Files.getFileDirectory() + "\\db-configurations";
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+                writer.write(path + ", " + user + ", " + pass);
+            }
+
+        }
+
+    }
 
     // Users
     public static class user {
@@ -135,9 +170,45 @@ public class DBFiles {
 
     }
 
+    // Cars
     public static class car {
 
+        // If car exists
+        public static boolean carExists() {
 
+            // todo
+            return false;
+
+        }
+
+        // Save car info
+        public static void saveCar() {
+
+            // todo
+
+        }
+
+        // Load car info
+        public static Car loadCar() {
+
+            // todo
+            return null;
+
+        }
+
+        // Delete car
+        public static void deleteCar() {
+
+            // todo
+
+        }
+
+    }
+
+    // Garages
+    public static class garages {
+
+        // todo
 
     }
 
