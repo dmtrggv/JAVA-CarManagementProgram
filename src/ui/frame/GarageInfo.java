@@ -3,6 +3,7 @@ package ui.frame;
 import components.Garage;
 import ui.Panels;
 import use.Constants;
+import use.DBFiles;
 import use.Files;
 
 import javax.swing.*;
@@ -64,12 +65,13 @@ public class GarageInfo extends Panels implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        // Save garage
         if (e.getSource() == btnSave) {
 
             if (!txGarageName.getText().isEmpty() && txGarageName.getText() != null && !Files.garageExists(txGarageName.getText(), Mine.currentUser.getUsername())) {
 
                 Garage garage = new Garage(txGarageName.getText());
-                Files.saveGarage(garage, Mine.currentUser.getUsername(), (currentGarage != null) ? currentGarage.getName() : null);
+                DBFiles.garages.saveGarage(garage);
 
                 int xStart = frame.getX() + (frame.getWidth() / 2);
                 int yStart = frame.getY() + (frame.getHeight() / 2);

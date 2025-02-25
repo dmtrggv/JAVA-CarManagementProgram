@@ -1,45 +1,64 @@
 package ui.frame;
 
 import components.Garage;
+import org.h2.jdbcx.JdbcConnectionPool;
 import ui.Panels;
 import use.Constants;
+import use.DBFiles;
 import use.Files;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class Settings extends Panels implements ActionListener {
 
     JDialog frame;
     JButton btnSave = new JButton("Запазване");
     JTextField txDbPath = new JTextField();
+    JTextField txDbAdmin = new JTextField();
+    JTextField txDbPass = new JTextField();
 
     public Settings(int x, int y) {
 
         // Create frame
-        frame = initializeDialog(x, y, 280, 230, Mine.frame, "Моят гараж");
+        frame = initializeDialog(x, y, 280, 330, Mine.frame, "Моят гараж");
 
         // Panel
         JPanel panel = createPanel();
 
-        // Garage name
+        // Data base path
         createTextField(
                 panel, 15, 10, "Път до базата данни:",
-                txDbPath, (Mine.currentUser.getDbPath() != null) ? Mine.currentUser.getDbPath() : null,
+                txDbPath, DBFiles.configuration.GetPath(),
                 true, Constants.filter.FILTER_NULL, -1, Constants.format.FORMAT_NULL
         );
 
-        // Label
+        // Data base admin
+        createTextField(
+                panel, 15, 60, "Админ:",
+                txDbAdmin, DBFiles.configuration.GetAdmin(),
+                true, Constants.filter.FILTER_NULL, -1, Constants.format.FORMAT_NULL
+        );
+
+        // Data base password
+        createTextField(
+                panel, 15, 110, "Парола:",
+                txDbPass, DBFiles.configuration.GetPassword(),
+                true, Constants.filter.FILTER_NULL, -1, Constants.format.FORMAT_NULL
+        );
+
+        // Info
         createTextArea(
-                panel, 15, 60, 60, "ВАЖНО!",
-                new JTextArea(), "Внимавай как въвеждаш пътят към базата данни (Data base), защото ако го сгрешиш, няма да може да се изпълни нито една заявка :)",
+                panel, 15, 160, 60, "ВАЖНО!",
+                new JTextArea(), "Внимавай как въвеждаш пътят, админът и паролата към базата данни (Data base), защото ако го сгрешиш, няма да може да се изпълни нито една заявка :)",
                 false, -1
         );
 
         // Save
-        btnSave.setBounds(15, 150, 237, 25);
+        btnSave.setBounds(15, 250, 237, 25);
         btnSave.addActionListener(this);
         btnSave.setFocusable(true);
         panel.add(btnSave);
@@ -55,14 +74,22 @@ public class Settings extends Panels implements ActionListener {
 
         if (e.getSource() == btnSave) {
 
-            if (!txDbPath.getText().isEmpty() && txDbPath.getText() != null) {
+            if (
+                (!txDbPath.getText().isEmpty() && txDbPath.getText() != null) &&
+                (!txDbAdmin.getText().isEmpty() && txDbAdmin.getText() != null) &&
+                (!txDbPass.getText().isEmpty() && txDbPass.getText() != null)
+            ) {
 
-                Mine.currentUser.setDbPath(txDbPath.getText());
-                JOptionPane.showMessageDialog(frame, "Пътят към базата данни бе обновен успешно!");
+                try {
+                    DBFiles.configuration.Update(txDbPath.getText(), txDbAdmin.getText(), txDbPass.getText());
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                JOptionPane.showMessageDialog(frame, "Данните за базата данни бе обновен успешно!");
 
             } else {
 
-                JOptionPane.showMessageDialog(frame, "Пътят към базата данни, не трябва да е празен!");
+                JOptionPane.showMessageDialog(frame, "Пътят, админът и паролата на базата данни, не трябва да е празен!");
 
             }
 

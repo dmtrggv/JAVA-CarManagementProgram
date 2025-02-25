@@ -10,6 +10,7 @@ public class User {
     private String nameLast;
     private Address address;
     private String info;
+    private int id;
 
     public User(User user) {
         this.username = user.getUsername();
@@ -18,9 +19,20 @@ public class User {
         this.nameLast = user.getNameLast();
         this.address = user.getAddress();
         this.info = user.getInfo();
+        this.id = user.getID();
     }
 
     public User(String username, String password, String nameFirst, String nameLast, Address address, String info) {
+        this.username = username;
+        this.password = password;
+        this.nameFirst = nameFirst;
+        this.nameLast = nameLast;
+        this.address = address;
+        this.info = info;
+    }
+
+    public User(int id, String username, String password, String nameFirst, String nameLast, Address address, String info) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.nameFirst = nameFirst;
@@ -59,6 +71,10 @@ public class User {
         return info;
     }
 
+    public int getID() {
+        return id;
+    }
+
     //endregion
 
     //region Setters
@@ -92,12 +108,17 @@ public class User {
         this.info = info;
     }
 
+    public void setID(int id) {
+        this.id = id;
+    }
+
     //endregion
 
     @Override
     public String toString() {
         return (
             "user { " +
+            "db.id: " + this.id + ", " +
             "username: " + this.username + ", " +
             "password: " + this.password + ", " +
             "firstName: " + this.nameFirst + ", " +

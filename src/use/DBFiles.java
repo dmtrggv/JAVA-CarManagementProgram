@@ -1,31 +1,55 @@
 package use;
 
 import components.Car;
+import components.Garage;
 import components.User;
 import org.h2.jdbcx.JdbcConnectionPool;
+import ui.frame.Mine;
 
 import javax.swing.*;
 import java.io.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class DBFiles {
 
-    // Get connection pool
-    private static JdbcConnectionPool CONNECTION_POOL;
+    // Connection attributes
+    private static String CONNECTION_PATH;
+    private static String CONNECTION_ADMIN;
+    private static String CONNECTION_PASS;
+
     static {
         try {
             String[] config = configuration.Load();
-            CONNECTION_POOL = JdbcConnectionPool.create(config[0], config[1], config[2]);
+            CONNECTION_PATH = config[0];
+            CONNECTION_ADMIN = config[1];
+            CONNECTION_PASS = config[2];
         } catch (IOException e) {
-            CONNECTION_POOL = JdbcConnectionPool.create("jdbc:h2:~\\test", "sa", "");
+            CONNECTION_PATH = "jdbc:h2:~\\test";
+            CONNECTION_ADMIN = "admin";
+            CONNECTION_PASS = "pass";
         }
     }
 
+    // Get connection pool
+    private static JdbcConnectionPool CONNECTION_POOL = JdbcConnectionPool.create(CONNECTION_PATH, CONNECTION_ADMIN, CONNECTION_PASS);
+
     // Configurations
     public static class configuration {
+
+        // Get path to DB
+        public static String GetPath() {
+            return CONNECTION_PATH;
+        }
+
+        // Get admin name
+        public static String GetAdmin() {
+            return CONNECTION_ADMIN;
+        }
+
+        // Get password
+        public static String GetPassword() {
+            return CONNECTION_PASS;
+        }
 
         public static String[] Load() throws IOException {
 
@@ -44,7 +68,6 @@ public class DBFiles {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
                 writer.write(path + ", " + user + ", " + pass);
             }
-
         }
 
     }
@@ -77,7 +100,7 @@ public class DBFiles {
             String sql = "MERGE INTO USERS (username, password, first_name, last_name, address, info) " +
                          "KEY(username) VALUES (?, ?, ?, ?, ?, ?)";
 
-            try (Connection conn = CONNECTION_POOL.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (Connection conn = CONNECTION_POOL.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
                 stmt.setString(1, user.getUsername());
                 stmt.setString(2, user.getPassword());
@@ -88,10 +111,16 @@ public class DBFiles {
 
                 stmt.executeUpdate();
 
+                // Save ID to the user object
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        user.setID(rs.getInt(1));
+                    }
+                }
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-
         }
 
         // Update existing user
@@ -123,7 +152,7 @@ public class DBFiles {
         // Load user
         public static User loadUser(String username, String password) {
 
-            String sql = "SELECT username, password, first_name, last_name, address, info FROM USERS WHERE username = ?";
+            String sql = "SELECT id, username, password, first_name, last_name, address, info FROM USERS WHERE username = ?";
 
             try (Connection conn = CONNECTION_POOL.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -141,8 +170,9 @@ public class DBFiles {
                         return null;
                     }
 
-                    // If all data is correct return the user
-                    return new User(
+                    // Load the user
+                    User user = new User(
+                            rs.getInt("id"),
                             rs.getString("username"),
                             dbPassword,
                             rs.getString("first_name"),
@@ -150,6 +180,8 @@ public class DBFiles {
                             new Address(rs.getString("address")),
                             rs.getString("info")
                     );
+
+                    return user;
 
                 } else {
 
@@ -208,7 +240,33 @@ public class DBFiles {
     // Garages
     public static class garages {
 
-        // todo
+        // Save garage
+        public static void saveGarage(Garage garage) {
+
+            // Get user id
+            int userId = Mine.currentUser.getID();
+
+            // User not exists
+            if (userId <= 0) {
+                System.out.println("User ID not found.");
+                return;
+            }
+
+            // Save garage string
+            String sql = "MERGE INTO GARAGE (garage_name, user_id) " +
+                         "KEY(garage_name, user_id) VALUES (?, ?)";
+
+            try (Connection conn = CONNECTION_POOL.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                stmt.setString(1, garage.getName());
+                stmt.setInt(2, userId);
+                stmt.executeUpdate();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
 
     }
 
