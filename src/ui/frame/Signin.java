@@ -5,7 +5,6 @@ import ui.dialog.VerifyAdmin;
 import ui.Panels;
 import use.Constants;
 import use.DBFiles;
-import use.Files;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,10 +29,7 @@ public class Signin extends Panels implements ActionListener {
 
         // Create frame
         setPanelExist(true);
-        frame = new JFrame("Влез в профил");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setBounds(100, 100, 350, 400);
-        frame.setResizable(false);
+        frame = initializeFrame(xStart, yStart, 350, 400, "Влез в профил");
 
         // Panel
         JPanel panel = new JPanel();

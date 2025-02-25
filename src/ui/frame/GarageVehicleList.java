@@ -2,6 +2,7 @@ package ui.frame;
 
 import components.Garage;
 import ui.Panels;
+import use.DBFiles;
 import use.Files;
 
 import javax.swing.*;
@@ -49,33 +50,29 @@ public class GarageVehicleList extends Panels implements ActionListener {
     private void createSearchTable(String username, String garage) {
 
         // Get data
-        Object[][] tableData = Files.loadGarageVehicles(username, garage);
+        Object[][] tableData = DBFiles.car.loadVehicleList(garage, "", "", "", "", "");
         String[] tableTitles = { "Рег.номер", "Марка", "Модел", "Разход", "BHP", "Година на регистрация", "Дата на застраховка" };
 
-        if (Files.carFileExists(username)) {
+        // Disable editable cells
+        DefaultTableModel tableModel = new DefaultTableModel(tableData, tableTitles) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
-            // Disable editable cells
-            DefaultTableModel tableModel = new DefaultTableModel(tableData, tableTitles) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false;
-                }
-            };
+        tableSearch = new JTable(tableModel);
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableSearch.getModel());
+        tableSearch.setRowSorter(sorter);
+        JScrollPane scrollPane = new JScrollPane(tableSearch);
 
-            tableSearch = new JTable(tableModel);
-            TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableSearch.getModel());
-            tableSearch.setRowSorter(sorter);
-            JScrollPane scrollPane = new JScrollPane(tableSearch);
+        panelTable.setLayout(null);
+        scrollPane.setBounds(0, 0, panelTable.getWidth() - 15, panelTable.getHeight());
+        scrollPane.setForeground(Color.white);
 
-            panelTable.setLayout(null);
-            scrollPane.setBounds(0, 0, panelTable.getWidth() - 15, panelTable.getHeight());
-            scrollPane.setForeground(Color.white);
-
-            panelTable.add(scrollPane);
-            panelTable.revalidate();
-            panelTable.repaint();
-
-        }
+        panelTable.add(scrollPane);
+        panelTable.revalidate();
+        panelTable.repaint();
 
     }
 

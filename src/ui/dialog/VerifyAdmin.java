@@ -16,7 +16,6 @@ public class VerifyAdmin extends Panels implements ActionListener {
     JCheckBox viewPassword = new JCheckBox("показване");
     JButton checkPassword = new JButton("Потвърди");
 
-
     public VerifyAdmin(int x, int y, JFrame frameMain, String action) {
 
         this.action = action;
@@ -25,9 +24,7 @@ public class VerifyAdmin extends Panels implements ActionListener {
         frame = initializeDialog(x, y, 300, 170, frameMain, "Потвърди admin парола");
 
         // Panel
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.white);
-        panel.setLayout(null);
+        JPanel panel = createPanel();
 
         // Password box
         password.setBounds(15, 10, 255, 30);
@@ -51,13 +48,17 @@ public class VerifyAdmin extends Panels implements ActionListener {
 
     }
 
+    // New registration
     private void actionRegister() {
+
         int xStart = frame.getX() + (frame.getWidth() / 2);
         int yStart = frame.getY() + (frame.getWidth() / 2);
         new UserInfo(xStart, yStart, true);
         frame.getOwner().dispose();
+
     }
 
+    // Edit existing user
     private void actionEditUser() {
         int xStart = frame.getX() + (frame.getWidth() / 2);
         int yStart = frame.getY() + (frame.getWidth() / 2);
@@ -67,19 +68,25 @@ public class VerifyAdmin extends Panels implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
+        // View password checkbox
         if (e.getSource() == viewPassword) {
-            if (password.getEchoChar() == (char) 0) {
-                password.setEchoChar('*');  // Mask the password again
-            } else {
-                password.setEchoChar((char) 0);  // Show the password as text
-            }
-        } else if (e.getSource() == checkPassword) {
+
+            if (password.getEchoChar() == (char) 0) password.setEchoChar('*');
+            else password.setEchoChar((char) 0);
+
+        }
+
+        // Make action
+        if (e.getSource() == checkPassword) {
+
             if (new String(password.getPassword()).equals("gogimaster")) {
                 if (frame.getOwner() != null) {
                          if (action.equals("register")) actionRegister();
                     else if (action.equals("edituser")) actionEditUser();
                 }
             } else JOptionPane.showMessageDialog(frame, "Паролата е невалидна, пробвай със 'gogimaster'");
+
         }
     }
 

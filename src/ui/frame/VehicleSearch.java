@@ -2,10 +2,7 @@ package ui.frame;
 
 import components.Car;
 import ui.Panels;
-import use.Constants;
-import use.Date;
-import use.Files;
-import use.NumericDocumentFilter;
+import use.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -58,7 +55,13 @@ public class VehicleSearch extends Panels implements ActionListener {
         panelTable = createPanelExt(0, 60, frame.getWidth(), frame.getHeight() - 140, Color.white, panel);
 
         // Search by vehicle type
-        createSearchByType(20, 7, "По тип:", cbTypeVehicle, new String[]{ "Всички", "Коли", "Мотори" }, panelSearch);
+        cbTypeVehicle = new JComboBox<>();
+        cbTypeVehicle.addItem("Всички");
+        Object[][] garageData = DBFiles.garage.loadGarageList(true);
+        for (Object[] garage : garageData) {
+            cbTypeVehicle.addItem((String) garage[0]);
+        }
+        createSearchByType(20, 7, "Гараж:", cbTypeVehicle, panelSearch);
 
         // Search by insurance
         createSearchByDate(20, 32, "Каско:", txSearchByInsuranceDay, txSearchByInsuranceMonth, txSearchByInsuranceYear, chSearchByInsurance, panelSearch);
@@ -91,37 +94,33 @@ public class VehicleSearch extends Panels implements ActionListener {
     }
 
     // Create table
-    private void createSearchTable(String username, String filterVehicleType, String filterRegNumber, String filterBrand, String filterModel, String filterDateInsurance, String filterRegister) {
+    private void createSearchTable(String filterGarage, String filterRegNumber, String filterBrand, String filterModel, String filterDateInsurance, String filterRegister) {
 
         // Get data
-        Object[][] tableData = Files.loadVehicles(username, filterVehicleType, filterRegNumber, filterBrand, filterModel, filterDateInsurance, filterRegister);
-        String[] tableTitles = { "Рег.номер", "Марка", "Модел", "Разход", "BHP", "Година на регистрация", "Дата на застраховка" };
+        Object[][] tableData = DBFiles.car.loadVehicleList(filterGarage, filterRegNumber, filterBrand, filterModel, filterDateInsurance, filterRegister);
+        String[] tableTitles = { "Рег.номер", "Марка", "Модел", "Разход", "BHP", "Година на регистрация", "Вид гориво" };
 
-        if (Files.carFileExists(username)) {
+        // Disable editable cells
+        DefaultTableModel tableModel = new DefaultTableModel(tableData, tableTitles) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
-            // Disable editable cells
-            DefaultTableModel tableModel = new DefaultTableModel(tableData, tableTitles) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false;
-                }
-            };
+        tableSearch = new JTable(tableModel);
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableSearch.getModel());
+        tableSearch.setRowSorter(sorter);
+        JScrollPane scrollPane = new JScrollPane(tableSearch);
 
-            tableSearch = new JTable(tableModel);
-            TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableSearch.getModel());
-            tableSearch.setRowSorter(sorter);
-            JScrollPane scrollPane = new JScrollPane(tableSearch);
+        panelTable.setLayout(null);
+        scrollPane.setBounds(0, 0, panelTable.getWidth() - 15, panelTable.getHeight());
+        scrollPane.setForeground(Color.white);
 
-            panelTable.setLayout(null);
-            scrollPane.setBounds(0, 0, panelTable.getWidth() - 15, panelTable.getHeight());
-            scrollPane.setForeground(Color.white);
-
-            panelTable.add(scrollPane);
-            panelTable.revalidate();
-            panelTable.repaint();
-            isTableCreated = true;
-
-        }
+        panelTable.add(scrollPane);
+        panelTable.revalidate();
+        panelTable.repaint();
+        isTableCreated = true;
 
     }
 
@@ -134,13 +133,12 @@ public class VehicleSearch extends Panels implements ActionListener {
     }
 
     // Search by type
-    private void createSearchByType(int x, int y, String title, JComboBox<String> combobox, String[] options, JPanel panelParent) {
+    private void createSearchByType(int x, int y, String title, JComboBox<String> combobox, JPanel panelParent) {
 
         JLabel label = new JLabel(title);
         label.setBounds(x, y, 60, 20);
         label.setFont(labelFont);
 
-        combobox = new JComboBox<>(options);
         combobox.setBounds(x + 60, y, 163, 20);
 
         panelParent.add(combobox);
@@ -212,14 +210,12 @@ public class VehicleSearch extends Panels implements ActionListener {
 
         if (e.getSource() == btnSearch) {
 
-            String filterType, filterRegNum, filterBrand, filterModel, filterInsurance, filterRegistration;
+            clearTable();
+            String filterGarage, filterRegNum, filterBrand, filterModel, filterInsurance, filterRegistration;
 
-            String vehicleTypeString = "all"; // (cbTypeVehicle.getSelectedItem() != null) ? (String) cbTypeVehicle.getSelectedItem() : "all";
-            if(vehicleTypeString.equals("Коли")) {
-                filterType = "cars";
-            } else if(vehicleTypeString.equals("Мотори")) {
-                filterType = "motors";
-            } else filterType = "all";
+            if (cbTypeVehicle.getSelectedIndex() != 0) {
+                filterGarage = (String) cbTypeVehicle.getSelectedItem();
+            } else filterGarage = "";
 
             if (!txSearchByRegNum.getText().isEmpty() && chSearchByRegNum.isSelected()) {
                 filterRegNum = txSearchByRegNum.getText();
@@ -251,22 +247,25 @@ public class VehicleSearch extends Panels implements ActionListener {
             } else filterInsurance = "";
 
             // Reload table
-            clearTable();
-            createSearchTable(Mine.currentUser.getUsername(), filterType, filterRegNum, filterBrand, filterModel, filterInsurance, filterRegistration);
+            createSearchTable(filterGarage, filterRegNum, filterBrand, filterModel, filterInsurance, filterRegistration);
 
-        } else if (e.getSource() == btnClear) {
+        }
+
+        if (e.getSource() == btnClear) {
 
             // Clear table
             clearTable();
 
-        } else if (e.getSource() == btnView) {
+        }
+
+        if (e.getSource() == btnView) {
 
             // Edit selected
             if (isTableCreated) {
                 int selectedRow = tableSearch.getSelectedRow();
                 Object firstCellValue = tableSearch.getValueAt(selectedRow, 0);
                 if (firstCellValue != null) {
-                    Car car = Files.loadCar(firstCellValue.toString(), Mine.currentUser.getUsername());
+                    Car car = DBFiles.car.loadCar(firstCellValue.toString());
                     int xStart = frame.getX() + (frame.getWidth() / 2);
                     int yStart = frame.getY() + (frame.getHeight() / 2);
                     new CarInfo(xStart, yStart, car, false, false);

@@ -5,6 +5,7 @@ import ui.Panels;
 import ui.frame.CarInfo;
 import ui.frame.Mine;
 import ui.frame.Signin;
+import use.DBFiles;
 import use.Date;
 import use.Files;
 import use.RegistrationNumber;
@@ -20,35 +21,23 @@ import java.awt.event.ActionListener;
 public class CreateVehicleType extends Panels implements ActionListener {
 
     JDialog frame;
-    JButton createCar = new JButton("Създай кола");
-    JButton createMotor = new JButton("Създай мотор");
+    JButton createCar, createMotor;
 
     public CreateVehicleType(int x, int y) {
 
         // Create frame
-        frame = new JDialog(Mine.frame, "Добавяне на ново МПС");
+        frame = initializeDialog(xStart, yStart, 300, 130, Mine.frame, "Добавяне на ново МПС");
         frame.setLocationRelativeTo(Signin.frame);
-        frame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        frame.setBounds(x - 100, y - 65, 300, 130);
-        frame.setResizable(false);
 
         // Panel
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.white);
-        panel.setLayout(null);
+        JPanel panel = createPanel();
 
         // Create car button
-        createCar.setBounds(15, 15, 254, 30);
-        createCar.setFocusable(true);
-        createCar.addActionListener(this);
+        createButton(15, 15, 254, createCar = new JButton("Създай кола"), panel);
 
         // Create motor button
-        createMotor.setBounds(15, 45, 254, 30);
-        createMotor.setFocusable(true);
-        createMotor.addActionListener(this);
+        createButton(15, 45, 254, createMotor = new JButton("Създай мотор"), panel);
 
-        panel.add(createCar);
-        panel.add(createMotor);
         frame.add(panel);
         frame.setVisible(true);
 
@@ -60,12 +49,12 @@ public class CreateVehicleType extends Panels implements ActionListener {
         // Create car
         if (e.getSource() == createCar) {
 
-            if (Files.garageFileExists(Mine.currentUser.getUsername())) {
-                Car car = Files.loadCar("102131", Mine.currentUser.getUsername());
+            if (DBFiles.garage.userHasGarages()) {
 
                 int xStart = frame.getX() + (frame.getWidth() / 2);
                 int yStart = frame.getY() + (frame.getHeight() / 2);
-                new CarInfo(xStart, yStart, car, true, false);
+                new CarInfo(xStart, yStart, null, true, false);
+
             } else {
                 JOptionPane.showMessageDialog(frame, "Няма нито един намерен гараж!\nДобавете поне един гараж, преди да продължите.");
             }

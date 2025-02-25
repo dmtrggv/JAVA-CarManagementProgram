@@ -4,7 +4,6 @@ import components.Garage;
 import ui.Panels;
 import use.Constants;
 import use.DBFiles;
-import use.Files;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -68,10 +67,17 @@ public class GarageInfo extends Panels implements ActionListener {
         // Save garage
         if (e.getSource() == btnSave) {
 
-            if (!txGarageName.getText().isEmpty() && txGarageName.getText() != null && !Files.garageExists(txGarageName.getText(), Mine.currentUser.getUsername())) {
+            if (
+                (!txGarageName.getText().isEmpty()) &&
+                (txGarageName.getText() != null) &&
+                (!DBFiles.garage.garageExists(txGarageName.getText()))
+            ) {
 
                 Garage garage = new Garage(txGarageName.getText());
-                DBFiles.garages.saveGarage(garage);
+
+                if (currentGarage != null) {
+                    DBFiles.garage.updateGarage(currentGarage, txGarageName.getText());
+                } else DBFiles.garage.saveGarage(garage);
 
                 int xStart = frame.getX() + (frame.getWidth() / 2);
                 int yStart = frame.getY() + (frame.getHeight() / 2);
@@ -85,7 +91,10 @@ public class GarageInfo extends Panels implements ActionListener {
 
             }
 
-        } else if (e.getSource() == btnEdit) {
+        }
+
+        // Edit garage
+        if (e.getSource() == btnEdit) {
 
             JOptionPane.showMessageDialog(frame, "Важно! Когато смениш името на гаража, има шанс да изгубиш МПС-тата от него!");
 
@@ -97,7 +106,10 @@ public class GarageInfo extends Panels implements ActionListener {
             new GarageInfo(xStart, yStart, garage, true);
             frame.dispose();
 
-        } else if (e.getSource() == btnSeeCars) {
+        }
+
+        // See cars in garage
+        if (e.getSource() == btnSeeCars) {
 
             if (!txGarageName.getText().isEmpty() && txGarageName != null) {
                 int xStart = frame.getX() + (frame.getWidth() / 2);

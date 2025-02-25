@@ -47,10 +47,7 @@ public class Mine extends Panels implements ActionListener {
         currentUser = new User(user);
 
         // Create frame
-        setPanelExist(true);
-        frame = new JFrame(Constants.app.APP_NAME + " - " + currentUser.getUsername() + " - " + currentUser.getNameFull() + " - " + Constants.app.DEVELOPER + "@" + Constants.app.DEV_STUDIO);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setSize(1100 , 650);
+        frame = initializeFrame(-1, -1, 1100, 650, Constants.app.APP_NAME + " - " + currentUser.getUsername() + " - " + currentUser.getNameFull() + " - " + Constants.app.DEVELOPER + "@" + Constants.app.DEV_STUDIO);
 
         // Panel
         JPanel panel = new JPanel();
@@ -114,7 +111,7 @@ public class Mine extends Panels implements ActionListener {
         menuMoreAbout.addActionListener(this);
 
         // Add options
-        menuMore.add(menuMoreSettings);
+        if (currentUser.getUsername().equals("admin")) menuMore.add(menuMoreSettings);
         menuMore.add(menuMoreAbout);
 
         // Add menu
@@ -131,18 +128,27 @@ public class Mine extends Panels implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        //region Profile menu
+
+        // Switch user
         if (e.getSource() == menuProfileSwitchUser) {
 
             // Switch user
             new Signin();
             frame.dispose();
 
-        } else if (e.getSource() == menuProfileLogout) {
+        }
+
+        // Logout
+        if (e.getSource() == menuProfileLogout) {
 
             // Close program
             frame.dispose();
 
-        } else if (e.getSource() == menuProfileEditUser) {
+        }
+
+        // Edit user
+        if (e.getSource() == menuProfileEditUser) {
 
             // Edit user
             int xStart = (frame.getX() + frame.getWidth()) / 2;
@@ -151,13 +157,21 @@ public class Mine extends Panels implements ActionListener {
 
         }
 
+        //endregion
+
+        //region Garage menu
+
+        // Add garage
         if (e.getSource() == menuGarageAdd) {
 
             int xStart = frame.getX() + (frame.getWidth() / 2);
             int yStart = frame.getY() + (frame.getHeight() / 2);
             new GarageInfo(xStart, yStart, null, true);
 
-        } else if (e.getSource() == menuGarageEdit) {
+        }
+
+        // Edit garage
+        if (e.getSource() == menuGarageEdit) {
 
             int xStart = frame.getX() + (frame.getWidth() / 2);
             int yStart = frame.getY() + (frame.getHeight() / 2);
@@ -165,13 +179,21 @@ public class Mine extends Panels implements ActionListener {
 
         }
 
+        //endregion
+
+        //region Vehicles menu
+
+        // Add vehicle
         if (e.getSource() == menuVehiclesAdd) {
 
             int xStart = frame.getX() + (frame.getWidth() / 2);
             int yStart = frame.getY() + (frame.getHeight() / 2);
             new CreateVehicleType(xStart, yStart);
 
-        } else if (e.getSource() == menuVehiclesSearch) {
+        }
+
+        // Search vehicle
+        if (e.getSource() == menuVehiclesSearch) {
 
             int xStart = frame.getX() + (frame.getWidth() / 2);
             int yStart = frame.getY() + (frame.getHeight() / 2);
@@ -179,6 +201,11 @@ public class Mine extends Panels implements ActionListener {
 
         }
 
+        //endregion
+
+        //region More menu
+
+        // Settings
         if (e.getSource() == menuMoreSettings) {
 
             int xStart = frame.getX() + (frame.getWidth() / 2);
@@ -186,6 +213,8 @@ public class Mine extends Panels implements ActionListener {
             new Settings(xStart, yStart);
 
         }
+
+        //endregion
 
     }
 

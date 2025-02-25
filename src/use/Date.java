@@ -11,6 +11,26 @@ public class Date {
     private int minute;
     private int second;
 
+    public Date(LocalDate date) {
+
+        if (date != null) {
+            this.year = date.getYear();
+            this.month = date.getMonthValue();
+            this.day = date.getDayOfMonth();
+            this.hour = 0;
+            this.minute = 0;
+            this.second = 0;
+        } else {
+            this.year = 0;
+            this.month = 0;
+            this.day = 0;
+            this.hour = 0;
+            this.minute = 0;
+            this.second = 0;
+        }
+
+    }
+
     public Date(String fromString) {
 
         String[] dateFields = fromString.split("\\.");

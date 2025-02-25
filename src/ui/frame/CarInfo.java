@@ -196,7 +196,7 @@ public class CarInfo extends Panels implements ActionListener {
 
         // Garages
         cbGarageList = new JComboBox<>();
-        Object[][] garageData = Files.loadGarages(Mine.currentUser.getUsername());
+        Object[][] garageData = DBFiles.garage.loadGarageList(false);
         for (Object[] garage : garageData) {
             cbGarageList.addItem((String) garage[0]);
         }
@@ -273,31 +273,38 @@ public class CarInfo extends Panels implements ActionListener {
     }
 
     // Create delete car confirmation box
-    public static void deleteCarConfirmation(String registrationNumber, String user, JDialog frame) {
+    public static void deleteCarConfirmation(String registrationNumber, JDialog frame) {
 
-        int confirmation = JOptionPane.showConfirmDialog(frame,
-                "Сигурен ли си, че искаш да изтриеш " + registrationNumber + "?",
-                "Изтриване на кола?",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE);
+        if (DBFiles.car.carCanModify(registrationNumber, Mine.currentUser.getUsername())) {
 
-        if (confirmation == JOptionPane.YES_OPTION) {
+            int confirmation = JOptionPane.showConfirmDialog(frame,
+                    "Сигурен ли си, че искаш да изтриеш " + registrationNumber + "?",
+                    "Изтриване на кола?",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
 
-            Files.deleteCar(registrationNumber, user);
-            frame.dispose();
+            if (confirmation == JOptionPane.YES_OPTION) {
 
-        }
+                DBFiles.car.deleteCar(registrationNumber);
+                frame.dispose();
+
+            }
+
+        } else JOptionPane.showMessageDialog(frame, "Нямаш правата да изтриваш тази кола!");
 
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        // Save car
         if (e.getSource() == btnSave) {
 
-            boolean newSave;
-            if (newCar) newSave = !Files.carExists(Mine.currentUser.getUsername(), txRegNumber.getText());
-            else newSave = true;
+            // If car can be saved
+            boolean canSave = true;
+            if (newCar) canSave = !DBFiles.car.carExists(txRegNumber.getText());
+
+            //region Check system
 
             boolean checkStrings = (
                 (!txBrand.getText().isEmpty()) &&
@@ -336,7 +343,75 @@ public class CarInfo extends Panels implements ActionListener {
                 (!txPower.getText().isEmpty() && Integer.parseInt(txPower.getText()) > 0)
             );
 
-            if (newSave && checkStrings && checkYears && checkDatesAgo && checkDatesFuture && checkNumbers) {
+            //endregion
+
+            if (canSave && checkStrings && checkYears && checkDatesAgo && checkDatesFuture && checkNumbers) {
+
+                // Create object
+                Car car = new Car(
+                        (!txBrand.getText().isEmpty()) ? txBrand.getText() : "",
+                        (!txModel.getText().isEmpty()) ? txModel.getText() : "",
+                        (!txRegNumber.getText().isEmpty()) ? new RegistrationNumber(txRegNumber.getText()) : null,
+                        (!txMileage.getText().isEmpty()) ? Integer.parseInt(txMileage.getText()) : 0,
+                        (!txLastOilChange.getText().isEmpty()) ? Integer.parseInt(txLastOilChange.getText()) : 0,
+                        (!txMpg.getText().isEmpty()) ? Double.parseDouble(txMpg.getText()) : 0,
+                        (!txGasTank.getText().isEmpty()) ? Double.parseDouble(txGasTank.getText()) : 0,
+                        (String) cbFuelType.getSelectedItem(),
+                        (!txPower.getText().isEmpty()) ? Integer.parseInt(txPower.getText()) : 0,
+                        (String) cbGearboxType.getSelectedItem(),
+                        (!txYearProduction.getText().isEmpty()) ? Integer.parseInt(txYearProduction.getText()) : 0,
+                        (!txYearRegister.getText().isEmpty()) ? Integer.parseInt(txYearRegister.getText()) : 0,
+                        new Date(
+                                (!txDateInsuranceY.getText().isEmpty()) ? Integer.parseInt(txDateInsuranceY.getText()) : 0,
+                                (!txDateInsuranceM.getText().isEmpty()) ? Integer.parseInt(txDateInsuranceM.getText()) : 0,
+                                (!txDateInsuranceD.getText().isEmpty()) ? Integer.parseInt(txDateInsuranceD.getText()) : 0
+                        ),
+                        new Date(
+                                (!txDateGtpY.getText().isEmpty()) ? Integer.parseInt(txDateGtpY.getText()) : 0,
+                                (!txDateGtpM.getText().isEmpty()) ? Integer.parseInt(txDateGtpM.getText()) : 0,
+                                (!txDateGtpD.getText().isEmpty()) ? Integer.parseInt(txDateGtpD.getText()) : 0
+                        ),
+                        new Date(
+                                (!txDateWheelChangeY.getText().isEmpty()) ? Integer.parseInt(txDateWheelChangeY.getText()) : 0,
+                                (!txDateWheelChangeM.getText().isEmpty()) ? Integer.parseInt(txDateWheelChangeM.getText()) : 0,
+                                (!txDateWheelChangeD.getText().isEmpty()) ? Integer.parseInt(txDateWheelChangeD.getText()) : 0
+                        ),
+                        (!txCarInfo.getText().isEmpty()) ? txCarInfo.getText() : "",
+                        (String) cbGarageList.getSelectedItem()
+                );
+
+                // Save into Data base
+                if (newCar) DBFiles.car.saveCar(car);
+                else DBFiles.car.updateCar(car);
+
+                // Restart frame
+                int xStart = frame.getX() + (frame.getWidth() / 2);
+                int yStart = frame.getY() + (frame.getHeight() / 2);
+                new CarInfo(xStart, yStart, car, false, false);
+                frame.dispose();
+
+            } else {
+
+                //region Error message
+
+                String notFull =        "- Всички полета за задължителни!" + "\n";
+                String notDatesAgo =    (!checkDatesAgo) ? "- Датите за Каско и за ГТП не трябва да са в бъдещето!" + "\n" : "";
+                String notDatesFuture = (!checkDatesFuture) ? "- Датата за мяна на гуми, не трябва да е минала!" + "\n" : "";
+                String notYears =       (!checkYears) ? "- Годините не могат да са отрицателни числа!" + "\n" : "";
+                String notNumbers =     (!checkNumbers) ? "- Числата рябва да са задължително по-големи от нула!" + "\n" : "";
+
+                JOptionPane.showMessageDialog(frame, notFull + notDatesAgo + notDatesFuture + notYears + notNumbers);
+
+                //endregion
+
+            }
+
+        }
+
+        // Edit car
+        if (e.getSource() == btnEdit) {
+
+            if (DBFiles.car.carCanModify(txRegNumber.getText(), Mine.currentUser.getUsername())) {
 
                 Car car = new Car(
                         (!txBrand.getText().isEmpty()) ? txBrand.getText() : "",
@@ -370,69 +445,26 @@ public class CarInfo extends Panels implements ActionListener {
                         (String) cbGarageList.getSelectedItem()
                 );
 
-                Files.saveCar(car, Mine.currentUser.getUsername());
-
                 int xStart = frame.getX() + (frame.getWidth() / 2);
                 int yStart = frame.getY() + (frame.getHeight() / 2);
-                new CarInfo(xStart, yStart, car, false, false);
+                new CarInfo(xStart, yStart, car, true, false);
                 frame.dispose();
 
-            } else {
-                String notFull =        "- Всички полета за задължителни!" + "\n";
-                String notDatesAgo =    (!checkDatesAgo) ? "- Датите за Каско и за ГТП не трябва да са в бъдещето!" + "\n" : "";
-                String notDatesFuture = (!checkDatesFuture) ? "- Датата за мяна на гуми, не трябва да е минала!" + "\n" : "";
-                String notYears =       (!checkYears) ? "- Годините не могат да са отрицателни числа!" + "\n" : "";
-                String notNumbers =     (!checkNumbers) ? "- Числата рябва да са задължително по-големи от нула!" + "\n" : "";
+            } else JOptionPane.showMessageDialog(frame, "Нямаш правата да редактираш тази кола!");
 
-                JOptionPane.showMessageDialog(frame, notFull + notDatesAgo + notDatesFuture + notYears + notNumbers);
-            }
+        }
 
-        } else if (e.getSource() == btnEdit) {
-
-            Car car = new Car(
-                    (!txBrand.getText().isEmpty()) ? txBrand.getText() : "",
-                    (!txModel.getText().isEmpty()) ? txModel.getText() : "",
-                    (!txRegNumber.getText().isEmpty()) ? new RegistrationNumber(txRegNumber.getText()) : null,
-                    (!txMileage.getText().isEmpty()) ? Integer.parseInt(txMileage.getText()) : 0,
-                    (!txLastOilChange.getText().isEmpty()) ? Integer.parseInt(txLastOilChange.getText()) : 0,
-                    (!txMpg.getText().isEmpty()) ? Double.parseDouble(txMpg.getText()) : 0,
-                    (!txGasTank.getText().isEmpty()) ? Double.parseDouble(txGasTank.getText()) : 0,
-                    (String) cbFuelType.getSelectedItem(),
-                    (!txPower.getText().isEmpty()) ? Integer.parseInt(txPower.getText()) : 0,
-                    (String) cbGearboxType.getSelectedItem(),
-                    (!txYearProduction.getText().isEmpty()) ? Integer.parseInt(txYearProduction.getText()) : 0,
-                    (!txYearRegister.getText().isEmpty()) ? Integer.parseInt(txYearRegister.getText()) : 0,
-                    new Date(
-                            (!txDateInsuranceY.getText().isEmpty()) ? Integer.parseInt(txDateInsuranceY.getText()) : 0,
-                            (!txDateInsuranceM.getText().isEmpty()) ? Integer.parseInt(txDateInsuranceM.getText()) : 0,
-                            (!txDateInsuranceD.getText().isEmpty()) ? Integer.parseInt(txDateInsuranceD.getText()) : 0
-                    ),
-                    new Date(
-                            (!txDateGtpY.getText().isEmpty()) ? Integer.parseInt(txDateGtpY.getText()) : 0,
-                            (!txDateGtpM.getText().isEmpty()) ? Integer.parseInt(txDateGtpM.getText()) : 0,
-                            (!txDateGtpD.getText().isEmpty()) ? Integer.parseInt(txDateGtpD.getText()) : 0
-                    ),
-                    new Date(
-                            (!txDateWheelChangeY.getText().isEmpty()) ? Integer.parseInt(txDateWheelChangeY.getText()) : 0,
-                            (!txDateWheelChangeM.getText().isEmpty()) ? Integer.parseInt(txDateWheelChangeM.getText()) : 0,
-                            (!txDateWheelChangeD.getText().isEmpty()) ? Integer.parseInt(txDateWheelChangeD.getText()) : 0
-                    ),
-                    (!txCarInfo.getText().isEmpty()) ? txCarInfo.getText() : "",
-                    (String) cbGarageList.getSelectedItem()
-            );
-
-            int xStart = frame.getX() + (frame.getWidth() / 2);
-            int yStart = frame.getY() + (frame.getHeight() / 2);
-            new CarInfo(xStart, yStart, car, true, false);
-            frame.dispose();
-
-        } else if (e.getSource() == btnDelete) {
+        // Delete car
+        if (e.getSource() == btnDelete) {
 
             if (txRegNumber.getText() != null && !txRegNumber.getText().isEmpty()) {
-                deleteCarConfirmation(txRegNumber.getText(), Mine.currentUser.getUsername(), frame);
+                deleteCarConfirmation(txRegNumber.getText(), frame);
             }
 
-        } else if (e.getSource() == btnGenerateRegNumber) {
+        }
+
+        // Random registration number
+        if (e.getSource() == btnGenerateRegNumber) {
 
             String regFirst = "";
             String regMid = "";
@@ -450,7 +482,7 @@ public class CarInfo extends Panels implements ActionListener {
 
                 String registrationNumber = regFirst + regMid + regLast;
 
-                if (!Files.carExists(Mine.currentUser.getUsername(), registrationNumber)) {
+                if (!DBFiles.car.carExists(registrationNumber)) {
                     unique = true;
                 }
 

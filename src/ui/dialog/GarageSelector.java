@@ -4,7 +4,7 @@ import components.Garage;
 import ui.Panels;
 import ui.frame.GarageInfo;
 import ui.frame.Mine;
-import use.Files;
+import use.DBFiles;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -14,19 +14,19 @@ public class GarageSelector extends Panels implements ActionListener {
 
     JDialog frame;
     JComboBox cbGarageList;
-    JButton btnOpen = new JButton("Отвори");
+    JButton btnOpen;
 
     public GarageSelector(int x, int y) {
 
         // Create frame
-        frame = initializeDialog(x, y, 280, 140, Mine.frame, "Избери гараж");
+        frame = initializeDialog(x, y, 280, 145, Mine.frame, "Избери гараж");
 
         // Panel
         JPanel panel = createPanel();
 
         // Garage selector
         cbGarageList = new JComboBox<>();
-        Object[][] garageData = Files.loadGarages(Mine.currentUser.getUsername());
+        Object[][] garageData = DBFiles.garage.loadGarageList(false);
         for (Object[] garage : garageData) {
             cbGarageList.addItem((String) garage[0]);
         }
@@ -36,10 +36,7 @@ public class GarageSelector extends Panels implements ActionListener {
         );
 
         // Open garage button
-        btnOpen.setBounds(15, 65, 237, 25);
-        btnOpen.addActionListener(this);
-        btnOpen.setFocusable(true);
-        panel.add(btnOpen);
+        createButton(15, 65, 237, btnOpen = new JButton("Отвори"), panel);
 
         // Add to frame
         frame.add(panel);
@@ -50,15 +47,19 @@ public class GarageSelector extends Panels implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        // Open garage
         if (e.getSource() == btnOpen) {
 
-            String selected = (String) cbGarageList.getSelectedItem();
+            String selected = (cbGarageList.getSelectedItem() != null) ? (String) cbGarageList.getSelectedItem() : "";
             if (!selected.isEmpty()) {
+
+                Garage garage = new Garage(selected);
                 int xStart = frame.getX() + (frame.getWidth() / 2);
                 int yStart = frame.getY() + (frame.getHeight() / 2);
-                Garage garage = new Garage(selected);
                 new GarageInfo(xStart, yStart, garage, false);
+
             }
+
         }
 
     }

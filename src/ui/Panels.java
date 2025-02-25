@@ -13,6 +13,11 @@ public abstract class Panels {
 
     // Constants
     protected final Font labelFont = new Font("Sans Serif", Font.BOLD, 12);
+    protected final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+    // Center positions
+    protected final int xStart = screenSize.width / 2;  // frame.getX() + (frame.getWidth() / 2);
+    protected final int yStart = screenSize.height / 2; // frame.getY() + (frame.getHeight() / 2);
 
     // Usability
     private static boolean panelExists = false;
@@ -34,8 +39,34 @@ public abstract class Panels {
         editable = status;
     }
 
+    // Initialize Frame window - frame on top of mine frame
+    public JFrame initializeFrame(int x, int y, int width, int height, String title) {
+
+        if (x == -1) x = (screenSize.width / 2);
+        if (y == -1) y = (screenSize.height / 2);
+
+        int xstart, ystart;
+
+        if (x - (width / 2) < 0) xstart = 0;
+        else xstart = x - (width / 2);
+
+        if (y - (height / 2) < 0) ystart = 0;
+        else ystart = y - (height / 2);
+
+        JFrame frame = new JFrame(title);
+        frame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        frame.setBounds(xstart, ystart, width, height);
+        frame.setResizable(false);
+
+        return frame;
+
+    }
+
     // Initialize Dialog window - frame on top of mine frame
     protected JDialog initializeDialog(int x, int y, int width, int height, JFrame mainFrame, String title) {
+
+        if (x == -1) x = (screenSize.width / 2);
+        if (y == -1) y = (screenSize.height / 2);
 
         setPanelExist(true);
         int xstart, ystart;
@@ -55,6 +86,14 @@ public abstract class Panels {
 
     }
 
+    // Create main panel
+    protected JPanel createPanel() {
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.WHITE);
+        panel.setLayout(null);
+        return panel;
+    }
+
     // Create panel
     protected JPanel createPanelExt(int x, int y, int width, int height, Color color, JPanel mainPanel) {
         JPanel panel = new JPanel();
@@ -62,14 +101,6 @@ public abstract class Panels {
         panel.setBackground(color);
         panel.setLayout(null);
         if (mainPanel != null) mainPanel.add(panel);
-        return panel;
-    }
-
-    // Create main panel
-    protected JPanel createPanel() {
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.WHITE);
-        panel.setLayout(null);
         return panel;
     }
 

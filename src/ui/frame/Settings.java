@@ -15,6 +15,9 @@ import java.io.IOException;
 
 public class Settings extends Panels implements ActionListener {
 
+    private final String info = "Използвай %projectfiles% за ../project-location/files." + "\n" +
+                                "Въвеждай внимателно пътят към базата данни, защото иначе няма да работят заявките!";
+
     JDialog frame;
     JButton btnSave = new JButton("Запазване");
     JTextField txDbPath = new JTextField();
@@ -53,7 +56,7 @@ public class Settings extends Panels implements ActionListener {
         // Info
         createTextArea(
                 panel, 15, 160, 60, "ВАЖНО!",
-                new JTextArea(), "Внимавай как въвеждаш пътят, админът и паролата към базата данни (Data base), защото ако го сгрешиш, няма да може да се изпълни нито една заявка :)",
+                new JTextArea(), info,
                 false, -1
         );
 
