@@ -5,6 +5,7 @@ public class Constants {
     public static class app {
         public static final String APP_NAME = "REPAIR GURU";
         public static final String DEVELOPER = "Dimitar Gogov";
+        public static final String DB_DEVELOPER = "Radoslav Politov";
         public static final String DEV_STUDIO = "KRAVA TECHNOLOGIES LLC.";
         public static final String RELEASE_YEAR = "2024";
     }

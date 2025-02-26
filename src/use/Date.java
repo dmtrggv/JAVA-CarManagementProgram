@@ -2,6 +2,12 @@ package use;
 
 import java.time.LocalDate;
 
+/*
+ * The Date class represents a date with attributes for year, month, day, hour, minute, and second.
+ * It provides constructors for initializing a date, methods for retrieving and setting date components,
+ * and functionality to check if the date is in the future or to format it as a string.
+ */
+
 public class Date {
 
     private int year;
@@ -11,6 +17,9 @@ public class Date {
     private int minute;
     private int second;
 
+    /*
+     * Create Date object from LocalDate
+     */
     public Date(LocalDate date) {
 
         if (date != null) {
@@ -31,6 +40,9 @@ public class Date {
 
     }
 
+    /*
+     * Create Date object from String
+     */
     public Date(String fromString) {
 
         String[] dateFields = fromString.split("\\.");
@@ -49,12 +61,18 @@ public class Date {
 
     }
 
+    /*
+     * Create Date object DD.MM.YYYY
+     */
     public Date(int year, int month, int day) {
         this.year = year;
         this.month = month % 13;
         this.day = day % 32;
     }
 
+    /*
+     * Create Date object DD.MM.YYYY, HH:MM:SS
+     */
     public Date(int year, int month, int day, int hour, int minute, int second) {
         this.year = year;
         this.month = ((month - 1) % 12) + 1;
@@ -64,6 +82,9 @@ public class Date {
         this.second = second % 60;
     }
 
+    /*
+     * Get the difference from 2 provided dates
+     */
     public Date(Date dateCurrent /* new */, Date dateCompared /* old */) {
 
         int diffYear, diffMonth, diffDay, diffHour, diffMinute, diffSecond;

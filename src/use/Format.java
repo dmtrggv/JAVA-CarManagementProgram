@@ -1,13 +1,19 @@
 package use;
 
-import java.text.DecimalFormat;
+/*
+ * The Format class provides static methods for formatting numbers.
+ * These methods include formatting numbers with digit grouping and abbreviating large numbers.
+ */
 
 public class Format {
 
-    // Format digit grouping - 1200 -> 1 200
+    /*
+     * Formats an integer with digit grouping, either in full format with spaces or in a short format with an abbreviation.
+     * @param index - The number to format.
+     * @param full - If true, formats the number in full with spaces; if false, formats with an abbreviation.
+     * @return the formatted number as a string.
+     */
     public static String toDigitGrouping(int index, boolean full) {
-
-        // This method returns String
 
         if (full) {
 

@@ -1,5 +1,10 @@
 package components;
 
+/*
+ * The Garage class represents a garage with an ID and a name.
+ * It provides getters and setters for both the ID and name attributes.
+ */
+
 public class Garage {
 
     private int id;

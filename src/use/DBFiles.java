@@ -43,10 +43,15 @@ public class DBFiles {
     // Get connection pool
     private static final JdbcConnectionPool CONNECTION_POOL = JdbcConnectionPool.create(CONNECTION_PATH, CONNECTION_ADMIN, CONNECTION_PASS);
 
-    // Configurations
+    /*
+     * The configuration class provides static methods for managing database configurations, such as loading, updating,
+     * and retrieving the database connection path, admin name, and password.
+     */
     public static class configuration {
 
-        // Load path to DB
+        /*
+         * Loads database configuration from a file and returns it as an array of strings.
+         */
         public static String[] Load() throws IOException {
 
             String filePath = Files.getFileDirectory() + "\\db-configurations";
@@ -57,7 +62,10 @@ public class DBFiles {
 
         }
 
-        // Update path to DB
+
+        /*
+         * Updates the database configuration file with the given path, user, and password.
+         */
         public static void Update(String path, String user, String pass) throws IOException {
 
             String filePath = Files.getFileDirectory() + "\\db-configurations";
@@ -67,27 +75,40 @@ public class DBFiles {
             }
         }
 
-        // Get path to DB
+        /*
+         * Returns the current database connection path.
+         */
         public static String GetPath() {
             return CONNECTION_PATH_REAL;
         }
 
-        // Get admin name
+        /*
+         * Returns the admin name for the database connection.
+         */
         public static String GetAdmin() {
             return CONNECTION_ADMIN;
         }
 
-        // Get password
+        /*
+         * Returns the password for the database connection.
+         */
         public static String GetPassword() {
             return CONNECTION_PASS;
         }
 
     }
 
-    // Users
+    /*
+     * The user class provides static methods to interact with the database for user management.
+     * These methods include checking if a username exists, saving, updating, and loading user data.
+     */
     public static class user {
 
-        // If username exists
+        /*
+         * Checks if the provided username already exists in the database.
+         * @param username - The username to check.
+         * @return true if the username exists, false otherwise.
+         */
         public static boolean usernameExists(String username) {
 
             String sql = "SELECT COUNT(*) FROM USERS WHERE username = ?";
@@ -107,7 +128,10 @@ public class DBFiles {
 
         }
 
-        // Save new user
+        /*
+         * Saves a new user to the database.
+         * @param user - The user object to save.
+         */
         public static void saveUser(User user) {
 
             String sql = "MERGE INTO USERS (username, password, first_name, last_name, address, info) " +
@@ -136,7 +160,10 @@ public class DBFiles {
             }
         }
 
-        // Update existing user
+        /*
+         * Updates the details of an existing user in the database.
+         * @param user - The user object with updated data.
+         */
         public static void updateUser(User user) {
 
             String sql = "UPDATE USERS SET password = ?, first_name = ?, last_name = ?, address = ?, info = ? WHERE username = ?";
@@ -162,7 +189,12 @@ public class DBFiles {
             }
         }
 
-        // Load user
+        /*
+         * Loads a user from the database based on the provided username and password.
+         * @param username - The username of the user to load.
+         * @param password - The password to validate.
+         * @return the User object if found and password is correct, null otherwise.
+         */
         public static User loadUser(String username, String password) {
 
             String sql = "SELECT id, username, password, first_name, last_name, address info FROM USERS WHERE username = ?";
@@ -215,10 +247,17 @@ public class DBFiles {
 
     }
 
-    // Cars
+    /*
+     * The car class provides static methods to interact with the database for car management.
+     * These methods include checking if a car exists, saving, updating, loading car data, and performing delete operations.
+     */
     public static class car {
 
-        // If car exists
+        /*
+         * Checks if a car with the given registration number exists in the database.
+         * @param registrationNumber - The registration number of the car.
+         * @return true if the car exists, false otherwise.
+         */
         public static boolean carExists(String registrationNumber) {
 
             String sql = "SELECT COUNT(*) FROM CARS WHERE id = ?";
@@ -238,7 +277,10 @@ public class DBFiles {
 
         }
 
-        // Save car info
+        /*
+         * Saves car information to the database.
+         * @param car - The car object to save.
+         */
         public static void saveCar(Car car) {
 
             // Garage not exists
@@ -310,7 +352,10 @@ public class DBFiles {
 
         }
 
-        // Update car info
+        /*
+         * Updates the information of an existing car in the database.
+         * @param car - The car object with updated data.
+         */
         public static void updateCar(Car car) {
 
             // Garage not exists
@@ -385,7 +430,11 @@ public class DBFiles {
 
         }
 
-        // Load car info
+        /*
+         * Loads car information from the database based on the given registration number.
+         * @param registrationNumber - The registration number of the car to load.
+         * @return the Car object with loaded data, or null if the car is not found.
+         */
         public static Car loadCar(String registrationNumber) {
 
             // SQL syntax
@@ -433,7 +482,12 @@ public class DBFiles {
 
         }
 
-        // Car can be deleted
+        /*
+         * Checks if the car with the given registration number can be modified by the provided username.
+         * @param registrationNumber - The registration number of the car.
+         * @param username - The username of the user requesting modification.
+         * @return true if the car can be modified by the user, false otherwise.
+         */
         public static boolean carCanModify(String registrationNumber, String username) {
 
             // Check if registration number and username are valid
@@ -470,7 +524,10 @@ public class DBFiles {
 
         }
 
-        // Delete car
+        /*
+         * Deletes the car with the given registration number from the database.
+         * @param registrationNumber - The registration number of the car to delete.
+         */
         public static void deleteCar(String registrationNumber) {
 
             // Check registration number
@@ -503,7 +560,16 @@ public class DBFiles {
 
         }
 
-        // Load vehicles list
+        /*
+         * Loads a list of cars from the database based on various filter parameters.
+         * @param filterGarage - The garage filter to apply (optional).
+         * @param filterRegNumber - The registration number filter to apply (optional).
+         * @param filterBrand - The brand filter to apply (optional).
+         * @param filterModel - The model filter to apply (optional).
+         * @param filterDateInsurance - The insurance date filter to apply (optional).
+         * @param filterDateRegister - The registration year filter to apply (optional).
+         * @return a 2D Object array with car data that matches the filters.
+         */
         public static Object[][] loadVehicleList(String filterGarage, String filterRegNumber, String filterBrand, String filterModel, String filterDateInsurance, String filterDateRegister) {
 
             List<Object[]> vehicleDataList = new ArrayList<>();
@@ -593,10 +659,18 @@ public class DBFiles {
 
     }
 
-    // Garages
+    /*
+     * The garage class provides static methods to interact with the database for managing garages.
+     * These methods include checking if a garage exists, saving, updating, and loading garage data.
+     */
     public static class garage {
 
-        // Get garage ID
+        /*
+         * Retrieves the garage ID based on the garage name and user ID.
+         * @param garageName - The name of the garage.
+         * @param userId - The user ID of the current user.
+         * @return the garage ID if found, null otherwise.
+         */
         public static Integer getGarageIdByName(String garageName, int userId) {
 
             // Garage name not exists
@@ -623,7 +697,12 @@ public class DBFiles {
 
         }
 
-        // Get garage Name
+        /*
+         * Retrieves the garage name based on the garage ID and user ID.
+         * @param garageId - The ID of the garage.
+         * @param userId - The user ID of the current user.
+         * @return the garage name if found, null otherwise.
+         */
         public static String getGarageNameById(int garageId, int userId) {
 
             // Check for garage ID and user ID
@@ -649,7 +728,10 @@ public class DBFiles {
 
         }
 
-        // If user has any garages
+        /*
+         * Checks if the current user has any garages associated with them.
+         * @return true if the user has at least one garage, false otherwise.
+         */
         public static boolean userHasGarages() {
 
             // Get user db.id
@@ -682,7 +764,11 @@ public class DBFiles {
             return false;
         }
 
-        // If garage name exists
+        /*
+         * Checks if a garage with the specified name exists for the current user.
+         * @param name - The name of the garage.
+         * @return true if the garage exists, false otherwise.
+         */
         public static boolean garageExists(String name) {
 
             // Get user db.id
@@ -716,7 +802,10 @@ public class DBFiles {
 
         }
 
-        // Save garage
+        /*
+         * Saves a new garage to the database for the current user.
+         * @param garage - The garage object to save.
+         */
         public static void saveGarage(Garage garage) {
 
             // Get user db.id
@@ -744,7 +833,11 @@ public class DBFiles {
 
         }
 
-        // Update existing garage
+        /*
+         * Updates the name of an existing garage for the current user.
+         * @param garage - The garage object with the current name.
+         * @param newName - The new name for the garage.
+         */
         public static void updateGarage(Garage garage, String newName) {
 
             // Get user db.id
@@ -785,7 +878,11 @@ public class DBFiles {
 
         }
 
-        // Load garages list
+        /*
+         * Loads a list of garage names associated with the current user or optionally ignores user filtering.
+         * @param ignoreUser - If true, the method ignores the user filter and loads all garages; otherwise, it filters by user.
+         * @return a 2D array of garage names.
+         */
         public static Object[][] loadGarageList(boolean ignoreUser) {
 
             List<Object[]> garageDataList = new ArrayList<>();

@@ -2,6 +2,11 @@ package components;
 
 import use.Address;
 
+/*
+ * The User class represents a user with attributes such as username, password, name, address, and additional info.
+ * It provides constructors, getters, setters, and a toString method to manage and display user details.
+ */
+
 public class User {
 
     private String username;
@@ -12,6 +17,9 @@ public class User {
     private String info;
     private int id;
 
+    /*
+     * Create user object from another user object - it's not very efficient, I know
+     */
     public User(User user) {
         this.username = user.getUsername();
         this.password = user.getPassword();
@@ -22,6 +30,9 @@ public class User {
         this.id = user.getID();
     }
 
+    /*
+     * Create user object with all attributes but without ID (Data Base ID)
+     */
     public User(String username, String password, String nameFirst, String nameLast, Address address, String info) {
         this.username = username;
         this.password = password;
@@ -31,6 +42,9 @@ public class User {
         this.info = info;
     }
 
+    /*
+     * Create user object with all attributes and ID (Data Base ID)
+     */
     public User(int id, String username, String password, String nameFirst, String nameLast, Address address, String info) {
         this.id = id;
         this.username = username;

@@ -1,8 +1,11 @@
 package use;
 
-public class Address {
+/*
+ * The Address class represents a physical address with attributes such as street type, street name, street number, town, and country.
+ * It provides constructors to initialize the address and methods to get and set these attributes.
+ */
 
-    // This Class is from the Invisible Library project - check it out
+public class Address {
 
     private String streetType;
     private String streetName;
@@ -10,6 +13,9 @@ public class Address {
     private String town;
     private String country;
 
+    /*
+     * Create Address object with all attributes
+     */
     public Address(String streetType, String streetName, String streetNumber, String town, String country) {
         this.streetType = streetType;
         this.streetName = streetName;
@@ -18,6 +24,9 @@ public class Address {
         this.country = country;
     }
 
+    /*
+     * Create Address object from String
+     */
     public Address(String input) {
         String[] parts = input.split(", ");
         String streetInfo = parts[0].trim();

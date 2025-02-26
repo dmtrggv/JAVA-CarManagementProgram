@@ -3,6 +3,11 @@ package components;
 import use.Date;
 import use.RegistrationNumber;
 
+/*
+ * The Car class extends the Vehicle class and represents a car with attributes such as mileage, fuel type, horsepower, and production year.
+ * It provides getters and setters for these attributes and a toString method to output car details in a readable format.
+ * The class also includes various dates related to insurance, GTP, and wheel changes.
+ */
 public class Car extends Vehicle {
 
     private int     mileage;
@@ -20,10 +25,16 @@ public class Car extends Vehicle {
     private String  garage;
     private String  info;
 
+    /*
+     * Create car only with Registration number
+     */
     public Car(RegistrationNumber regNumber) {
         super(vehicleType.CAR, regNumber, null, null);
     }
 
+    /*
+     * Make car with all attributes
+     */
     public Car(String brand, String model, RegistrationNumber registrationNumber, int mileage, int lastOilChange, double mpg, double gasTank, String fuelType, int hp, String gearboxType, int yearProduction, int yearRegistration, Date dateInsurance, Date dateGTP, Date dateWheelChange, String info, String garage) {
         super(vehicleType.CAR, registrationNumber, brand, model);
         this.mileage =          mileage;
