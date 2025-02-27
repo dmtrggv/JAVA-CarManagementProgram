@@ -557,7 +557,7 @@ public class DBFiles {
                                 new Date(rs.getDate("gtp_date").toLocalDate()),                                 // gtp_date
                                 new Date(rs.getDate("insurance_date").toLocalDate()),                           // insurance_date
                                 new Date(rs.getDate("wheels_date").toLocalDate()),                              // wheels_date
-                                (rs.getString("info").equals("N/A")) ? null : rs.getString("info"),  // info
+                                (rs.getString("info").equals("N/A")) ? null : rs.getString("info").replaceAll("<n>", "\n"),  // info
                                 garage.getGarageNameById(rs.getInt("garage_id"), -1)                      // garage_id
                         );
                     }
