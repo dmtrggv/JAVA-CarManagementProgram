@@ -27,7 +27,7 @@ public class Settings extends Panels implements ActionListener {
     public Settings(int x, int y) {
 
         // Create frame
-        frame = initializeDialog(x, y, 280, 330, Mine.frame, "Моят гараж");
+        frame = initializeDialog(x, y, 280, 330, Mine.frame, "Настройки");
 
         // Panel
         JPanel panel = createPanel();

@@ -43,31 +43,38 @@ public class DBFiles {
     // Get connection pool
     private static final JdbcConnectionPool CONNECTION_POOL = JdbcConnectionPool.create(CONNECTION_PATH, CONNECTION_ADMIN, CONNECTION_PASS);
 
-    /*
-     * The configuration class provides static methods for managing database configurations, such as loading, updating,
-     * and retrieving the database connection path, admin name, and password.
-     */
+    /**
+     * The Configuration class provides static methods for managing database configurations,
+     * including loading, updating, and retrieving connection details such as the database path,
+     * admin username, and password.
+    **/
     public static class configuration {
 
-        /*
-         * Loads database configuration from a file and returns it as an array of strings.
-         */
+        /**
+         * Loads the database configuration from a file and returns it as an array of strings.
+         * The expected format of the file is: "database_path, admin_username, password".
+         *
+         * @return An array of strings containing the database path, admin username, and password.
+         * @throws IOException If an error occurs while reading the configuration file.
+        **/
         public static String[] Load() throws IOException {
-
             String filePath = Files.getFileDirectory() + "\\db-configurations";
 
             try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
                 return reader.readLine().split(", ");
             }
-
         }
 
-
-        /*
-         * Updates the database configuration file with the given path, user, and password.
-         */
+        /**
+         * Updates the database configuration file with the given connection details.
+         * The provided values will overwrite the existing configuration.
+         *
+         * @param path The new database connection path.
+         * @param user The new admin username.
+         * @param pass The new password.
+         * @throws IOException If an error occurs while writing to the configuration file.
+        **/
         public static void Update(String path, String user, String pass) throws IOException {
-
             String filePath = Files.getFileDirectory() + "\\db-configurations";
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
@@ -75,40 +82,45 @@ public class DBFiles {
             }
         }
 
-        /*
-         * Returns the current database connection path.
-         */
+        /**
+         * Retrieves the current database connection path.
+         *
+         * @return The database connection path as a string.
+        **/
         public static String GetPath() {
             return CONNECTION_PATH_REAL;
         }
 
-        /*
-         * Returns the admin name for the database connection.
-         */
+        /**
+         * Retrieves the admin username for the database connection.
+         *
+         * @return The admin username as a string.
+        **/
         public static String GetAdmin() {
             return CONNECTION_ADMIN;
         }
 
-        /*
-         * Returns the password for the database connection.
-         */
+        /**
+         * Retrieves the password for the database connection.
+         *
+         * @return The database password as a string.
+        **/
         public static String GetPassword() {
             return CONNECTION_PASS;
         }
-
     }
 
-    /*
+    /**
      * The user class provides static methods to interact with the database for user management.
      * These methods include checking if a username exists, saving, updating, and loading user data.
-     */
+    **/
     public static class user {
 
-        /*
+        /**
          * Checks if the provided username already exists in the database.
          * @param username - The username to check.
          * @return true if the username exists, false otherwise.
-         */
+        **/
         public static boolean usernameExists(String username) {
 
             String sql = "SELECT COUNT(*) FROM USERS WHERE username = ?";
@@ -128,10 +140,10 @@ public class DBFiles {
 
         }
 
-        /*
+        /**
          * Saves a new user to the database.
          * @param user - The user object to save.
-         */
+        **/
         public static void saveUser(User user) {
 
             String sql = "MERGE INTO USERS (username, password, first_name, last_name, address, info) " +
@@ -144,7 +156,7 @@ public class DBFiles {
                 stmt.setString(3, user.getNameFirst());
                 stmt.setString(4, user.getNameLast());
                 stmt.setString(5, user.getAddress() != null ? user.getAddress().toString() : "N/A");
-                stmt.setString(6, user.getInfo() != null ? user.getInfo().replace("\n", "\\n") : "N/A");
+                stmt.setString(6, user.getInfo() != null ? user.getInfo().replace("\n", "<n>") : "N/A");
 
                 stmt.executeUpdate();
 
@@ -160,10 +172,10 @@ public class DBFiles {
             }
         }
 
-        /*
+        /**
          * Updates the details of an existing user in the database.
          * @param user - The user object with updated data.
-         */
+        **/
         public static void updateUser(User user) {
 
             String sql = "UPDATE USERS SET password = ?, first_name = ?, last_name = ?, address = ?, info = ? WHERE username = ?";
@@ -174,7 +186,7 @@ public class DBFiles {
                 stmt.setString(2, user.getNameFirst());
                 stmt.setString(3, user.getNameLast());
                 stmt.setString(4, user.getAddress() != null ? user.getAddress().toString() : "N/A");
-                stmt.setString(5, user.getInfo() != null ? user.getInfo().replace("\n", "\\n") : "N/A");
+                stmt.setString(5, user.getInfo() != null ? user.getInfo().replace("\n", "<n>") : "N/A");
                 stmt.setString(6, user.getUsername());
 
                 int rowsUpdated = stmt.executeUpdate();
@@ -189,15 +201,61 @@ public class DBFiles {
             }
         }
 
-        /*
+        /**
+         * Loads a user from the database based on the provided username only.
+         * @param username - The username of the user to load.
+         * @return the User object if found and password is correct, null otherwise.
+         **/
+        public static User loadUser(String username) {
+
+            String sql = "SELECT * FROM USERS WHERE username = ?";
+
+            try (Connection conn = CONNECTION_POOL.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                stmt.setString(1, username);
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+
+                    // Load the user
+                    User user = new User(
+                            rs.getInt("id"),
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("first_name"),
+                            rs.getString("last_name"),
+                            new Address(rs.getString("address")),
+                            rs.getString("info").replaceAll("<n>", "\n")
+                    );
+
+                    return user;
+
+                } else {
+
+                    JOptionPane.showMessageDialog(null, "Потребителят не съществува!", "Грешка!", JOptionPane.ERROR_MESSAGE);
+                    return null;
+
+                }
+
+            } catch (SQLException e) {
+
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Грешка при свързване с базата данни!", "Грешка!", JOptionPane.ERROR_MESSAGE);
+
+            }
+
+            return null;
+        }
+
+        /**
          * Loads a user from the database based on the provided username and password.
          * @param username - The username of the user to load.
          * @param password - The password to validate.
          * @return the User object if found and password is correct, null otherwise.
-         */
+        **/
         public static User loadUser(String username, String password) {
 
-            String sql = "SELECT id, username, password, first_name, last_name, address info FROM USERS WHERE username = ?";
+            String sql = "SELECT * FROM USERS WHERE username = ?";
 
             try (Connection conn = CONNECTION_POOL.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -223,7 +281,7 @@ public class DBFiles {
                             rs.getString("first_name"),
                             rs.getString("last_name"),
                             new Address(rs.getString("address")),
-                            rs.getString("info")
+                            rs.getString("info").replaceAll("<n>", "\n")
                     );
 
                     return user;
@@ -245,19 +303,53 @@ public class DBFiles {
             return null;
         }
 
+        /**
+         * Loads all users' usernames from the database.
+         * Retrieves the usernames of all users and returns the data in a two-dimensional Object array format.
+         *
+         * @return A two-dimensional Object array where each row contains a single user's username.
+         *         If no users are found, returns an empty array.
+        **/
+        public static Object[][] loadUsernamesList() {
+
+            List<Object[]> userDataList = new ArrayList<>();
+
+            // SQL syntax
+            String sql = "SELECT username FROM USERS";
+
+            try (Connection conn = CONNECTION_POOL.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+
+                while (rs.next()) {
+
+                    String username = rs.getString("username");
+
+                    // Add username to the list
+                    userDataList.add(new Object[]{ username });
+
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            // Convert list to Object[][] array
+            return userDataList.toArray(new Object[0][]);
+
+        }
+
     }
 
-    /*
+    /**
      * The car class provides static methods to interact with the database for car management.
      * These methods include checking if a car exists, saving, updating, loading car data, and performing delete operations.
-     */
+    **/
     public static class car {
 
-        /*
+        /**
          * Checks if a car with the given registration number exists in the database.
          * @param registrationNumber - The registration number of the car.
          * @return true if the car exists, false otherwise.
-         */
+        **/
         public static boolean carExists(String registrationNumber) {
 
             String sql = "SELECT COUNT(*) FROM CARS WHERE id = ?";
@@ -277,17 +369,16 @@ public class DBFiles {
 
         }
 
-        /*
+        /**
          * Saves car information to the database.
          * @param car - The car object to save.
-         */
+        **/
         public static void saveCar(Car car) {
 
             // Garage not exists
-            Integer garageId = null;
-            if (car.getGarage() != null && !car.getGarage().equalsIgnoreCase("N/A")) {
-                garageId = garage.getGarageIdByName(car.getGarage(), Mine.currentUser.getID());
-            } else {
+            System.out.println(car.getGarage());
+            Integer garageId = garage.getGarageIdByName(car.getGarage(), -1);
+            if (car.getGarage() == null || car.getGarage().equalsIgnoreCase("N/A") || garageId == null) {
                 JOptionPane.showMessageDialog(null, "Не съществува такъв гараж!");
                 return;
             }
@@ -340,7 +431,7 @@ public class DBFiles {
                 stmt.setDate(14, sqlDateGTP);                                        // gtp_date
                 stmt.setDate(15, sqlDateWheelChange);                                // wheels_date
                 stmt.setObject(16, garageId, Types.INTEGER);                         // garage_id
-                stmt.setString(17, (car.getInfo() == null || car.getInfo().isEmpty()) ? "N/A" : car.getInfo().replace("\n", "\\n")); // info
+                stmt.setString(17, (car.getInfo() == null || car.getInfo().isEmpty()) ? "N/A" : car.getInfo().replace("\n", "<n>")); // info
 
                 int rowsAffected = stmt.executeUpdate();
                 if (rowsAffected > 0) JOptionPane.showMessageDialog(null, "Колата е запазена успешно!");
@@ -352,17 +443,15 @@ public class DBFiles {
 
         }
 
-        /*
+        /**
          * Updates the information of an existing car in the database.
          * @param car - The car object with updated data.
-         */
+        **/
         public static void updateCar(Car car) {
 
             // Garage not exists
-            Integer garageId = null;
-            if (car.getGarage() != null && !car.getGarage().equalsIgnoreCase("N/A")) {
-                garageId = garage.getGarageIdByName(car.getGarage(), Mine.currentUser.getID());
-            } else {
+            Integer garageId = garage.getGarageIdByName(car.getGarage(), -1);
+            if (car.getGarage() == null || car.getGarage().equalsIgnoreCase("N/A") || garageId == null) {
                 JOptionPane.showMessageDialog(null, "Не съществува такъв гараж!");
                 return;
             }
@@ -372,7 +461,7 @@ public class DBFiles {
                     "brand = ?, model = ?, mileage = ?, last_oil_change = ?, mpg = ?, gas_tank = ?, " +
                     "fuel_type = ?, hp = ?, gearbox = ?, release_year = ?, registration_year = ?, " +
                     "insurance_date = ?, gtp_date = ?, wheels_date = ?, garage_id = ?, info = ? " +
-                    "AND id = ?";
+                    "WHERE id = ?";
 
             try (Connection conn = CONNECTION_POOL.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -416,8 +505,8 @@ public class DBFiles {
                 stmt.setDate(12, sqlDateInsurance);                                 // insurance_date
                 stmt.setDate(13, sqlDateGTP);                                       // gtp_date
                 stmt.setDate(14, sqlDateWheelChange);                               // wheels_date
-                stmt.setObject(15, garageId, Types.INTEGER);                        // garage_id
-                stmt.setString(16, (car.getInfo() == null || car.getInfo().isEmpty()) ? "N/A" : car.getInfo().replace("\n", "\\n")); // info
+                stmt.setInt(15, garageId);                                          // garage_id
+                stmt.setString(16, (car.getInfo() == null || car.getInfo().isEmpty()) ? "N/A" : car.getInfo().replace("\n", "<n>")); // info
                 stmt.setString(17, car.getRegistrationNumber().toString());         // id - registration_number
 
                 int rowsAffected = stmt.executeUpdate();
@@ -430,11 +519,11 @@ public class DBFiles {
 
         }
 
-        /*
+        /**
          * Loads car information from the database based on the given registration number.
          * @param registrationNumber - The registration number of the car to load.
          * @return the Car object with loaded data, or null if the car is not found.
-         */
+        **/
         public static Car loadCar(String registrationNumber) {
 
             // SQL syntax
@@ -469,7 +558,7 @@ public class DBFiles {
                                 new Date(rs.getDate("insurance_date").toLocalDate()),                           // insurance_date
                                 new Date(rs.getDate("wheels_date").toLocalDate()),                              // wheels_date
                                 (rs.getString("info").equals("N/A")) ? null : rs.getString("info"),  // info
-                                garage.getGarageNameById(Mine.currentUser.getID(), rs.getInt("garage_id"))      // garage_id
+                                garage.getGarageNameById(rs.getInt("garage_id"), -1)                      // garage_id
                         );
                     }
                 }
@@ -482,21 +571,64 @@ public class DBFiles {
 
         }
 
-        /*
+        /**
          * Checks if the car with the given registration number can be modified by the provided username.
          * @param registrationNumber - The registration number of the car.
          * @param username - The username of the user requesting modification.
          * @return true if the car can be modified by the user, false otherwise.
-         */
+        **/
         public static boolean carCanModify(String registrationNumber, String username) {
 
-            // Check if registration number and username are valid
-            if (registrationNumber == null || registrationNumber.trim().isEmpty() || username == null || username.trim().isEmpty()) {
+            if (username.equals("admin")) return true;
+            else {
+
+                // Check if registration number and username are valid
+                if (registrationNumber == null || registrationNumber.trim().isEmpty() || username == null || username.trim().isEmpty()) {
+                    return false;
+                }
+
+                // SQL syntax
+                String sql = "SELECT u.username " +
+                        "FROM CARS c " +
+                        "JOIN GARAGES g ON c.garage_id = g.id " +
+                        "JOIN USERS u ON g.user_id = u.id " +
+                        "WHERE c.id = ?";
+
+                try (Connection conn = CONNECTION_POOL.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                    // Set registration number parameter
+                    stmt.setString(1, registrationNumber);
+
+                    // Make transaction
+                    ResultSet rs = stmt.executeQuery();
+
+                    // Can delete
+                    if (rs.next()) {
+                        String garageOwnerUsername = rs.getString("username");
+                        return garageOwnerUsername != null && garageOwnerUsername.equals(username);
+                    }
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
                 return false;
+
             }
 
+        }
+
+        /**
+         * Retrieves the full name of the user who has permission to modify the car with the given registration number.
+         * @param registrationNumber - The registration number of the car.
+         * @return The full name of the user who can modify the car, or null if no user is found.
+        **/
+        public static String getCarOwnerFullName(String registrationNumber) {
+
+            if (registrationNumber == null || registrationNumber.trim().isEmpty()) return null;
+
             // SQL syntax
-            String sql = "SELECT u.username " +
+            String sql = "SELECT u.first_name, u.last_name " +
                     "FROM CARS c " +
                     "JOIN GARAGES g ON c.garage_id = g.id " +
                     "JOIN USERS u ON g.user_id = u.id " +
@@ -504,30 +636,29 @@ public class DBFiles {
 
             try (Connection conn = CONNECTION_POOL.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-                // Set registration number parameter
                 stmt.setString(1, registrationNumber);
 
-                // Make transaction
                 ResultSet rs = stmt.executeQuery();
 
-                // Can delete
                 if (rs.next()) {
-                    String garageOwnerUsername = rs.getString("username");
-                    return garageOwnerUsername != null && garageOwnerUsername.equals(username);
+                    String firstName = rs.getString("first_name");
+                    String lastName = rs.getString("last_name");
+
+                    return (firstName != null ? firstName : "") + " " + (lastName != null ? lastName : "").trim();
                 }
 
             } catch (SQLException e) {
                 e.printStackTrace();
             }
 
-            return false;
+            return null;
 
         }
 
-        /*
+        /**
          * Deletes the car with the given registration number from the database.
          * @param registrationNumber - The registration number of the car to delete.
-         */
+        **/
         public static void deleteCar(String registrationNumber) {
 
             // Check registration number
@@ -560,7 +691,7 @@ public class DBFiles {
 
         }
 
-        /*
+        /**
          * Loads a list of cars from the database based on various filter parameters.
          * @param filterGarage - The garage filter to apply (optional).
          * @param filterRegNumber - The registration number filter to apply (optional).
@@ -569,7 +700,7 @@ public class DBFiles {
          * @param filterDateInsurance - The insurance date filter to apply (optional).
          * @param filterDateRegister - The registration year filter to apply (optional).
          * @return a 2D Object array with car data that matches the filters.
-         */
+        **/
         public static Object[][] loadVehicleList(String filterGarage, String filterRegNumber, String filterBrand, String filterModel, String filterDateInsurance, String filterDateRegister) {
 
             List<Object[]> vehicleDataList = new ArrayList<>();
@@ -659,79 +790,118 @@ public class DBFiles {
 
     }
 
-    /*
+    /**
      * The garage class provides static methods to interact with the database for managing garages.
      * These methods include checking if a garage exists, saving, updating, and loading garage data.
-     */
+    **/
     public static class garage {
 
-        /*
+        /**
          * Retrieves the garage ID based on the garage name and user ID.
          * @param garageName - The name of the garage.
          * @param userId - The user ID of the current user.
          * @return the garage ID if found, null otherwise.
-         */
+        **/
         public static Integer getGarageIdByName(String garageName, int userId) {
 
-            // Garage name not exists
-            if (garageName == null || garageName.trim().isEmpty()) return null;
+            Integer returnInt = null;
+            if (garageName == null || garageName.trim().isEmpty() || userId <= 0) returnInt = null;
 
-            // SQL syntax
             String sql = "SELECT id FROM GARAGES WHERE garage_name = ?";
-            if (userId >= 0) sql += " AND user_id = ?";
+            if (userId > 0) sql += " AND user_id = ?";
 
             try (Connection conn = CONNECTION_POOL.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
                 stmt.setString(1, garageName);
-                if (userId >= 0) stmt.setInt(2, userId);
-                ResultSet rs = stmt.executeQuery();
+                if (userId > 0) stmt.setInt(2, userId);
 
-                // Returns garage ID
-                if (rs.next()) return rs.getInt("id");
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) returnInt = rs.getInt("id");
+                }
 
             } catch (SQLException e) {
                 e.printStackTrace();
             }
 
-            return null;
+            return returnInt;
 
         }
 
-        /*
+        /**
          * Retrieves the garage name based on the garage ID and user ID.
          * @param garageId - The ID of the garage.
          * @param userId - The user ID of the current user.
          * @return the garage name if found, null otherwise.
-         */
+        **/
         public static String getGarageNameById(int garageId, int userId) {
 
-            // Check for garage ID and user ID
-            if (garageId <= 0 || userId <= 0) return null;
+            String returnStr = null;
+            if (garageId <= 0 || userId <= 0) returnStr = null;
 
-            // SQL syntax
-            String sql = "SELECT garage_name FROM GARAGES WHERE id = ? AND user_id = ?";
+            String sql = "SELECT garage_name FROM GARAGES WHERE id = ?";
+            if (userId > 0) sql += " AND user_id = ?";
 
             try (Connection conn = CONNECTION_POOL.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
                 stmt.setInt(1, garageId);
-                stmt.setInt(2, userId);
-                ResultSet rs = stmt.executeQuery();
+                if (userId > 0) stmt.setInt(2, userId);
 
-                // Return garage
-                if (rs.next()) return rs.getString("garage_name");
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) returnStr = rs.getString("garage_name");
+                }
 
             } catch (SQLException e) {
                 e.printStackTrace();
             }
 
-            return null;
+            return returnStr;
 
         }
 
-        /*
+        /**
+         * Checks if a garage can be deleted by verifying if any cars are associated with the garage.
+         * It queries the database using the garage name to check if there are any cars linked to it.
+         * If no cars are linked, the garage can be deleted.
+         * @param garageName - The name of the garage to be checked.
+         * @return true if the garage can be deleted (i.e., no cars are associated with it), false otherwise.
+        **/
+        public static boolean canDeleteGarage(String garageName) {
+
+            // If garageName is null or empty
+            if (garageName == null || garageName.trim().isEmpty()) return false;
+
+            // SQL syntax
+            String sql = "SELECT COUNT(*) AS car_count " +
+                    "FROM CARS c " +
+                    "JOIN GARAGES g ON c.garage_id = g.id " +
+                    "WHERE g.garage_name = ?";
+
+            try (Connection conn = CONNECTION_POOL.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                // Set garage name parameter
+                stmt.setString(1, garageName);
+
+                // Execute the query
+                ResultSet rs = stmt.executeQuery();
+
+                // Check if any cars are associated with this garage
+                if (rs.next()) {
+                    int carCount = rs.getInt("car_count");
+                    return carCount == 0;
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            return false;
+
+        }
+
+        /**
          * Checks if the current user has any garages associated with them.
          * @return true if the user has at least one garage, false otherwise.
-         */
+        **/
         public static boolean userHasGarages() {
 
             // Get user db.id
@@ -764,11 +934,11 @@ public class DBFiles {
             return false;
         }
 
-        /*
+        /**
          * Checks if a garage with the specified name exists for the current user.
          * @param name - The name of the garage.
          * @return true if the garage exists, false otherwise.
-         */
+        **/
         public static boolean garageExists(String name) {
 
             // Get user db.id
@@ -802,10 +972,10 @@ public class DBFiles {
 
         }
 
-        /*
+        /**
          * Saves a new garage to the database for the current user.
          * @param garage - The garage object to save.
-         */
+        **/
         public static void saveGarage(Garage garage) {
 
             // Get user db.id
@@ -833,11 +1003,11 @@ public class DBFiles {
 
         }
 
-        /*
+        /**
          * Updates the name of an existing garage for the current user.
          * @param garage - The garage object with the current name.
          * @param newName - The new name for the garage.
-         */
+        **/
         public static void updateGarage(Garage garage, String newName) {
 
             // Get user db.id
@@ -878,17 +1048,49 @@ public class DBFiles {
 
         }
 
-        /*
+        /**
+         * Deletes a garage from the database if there are no cars associated with it.
+         * It first checks if the garage can be deleted by verifying if any cars are linked to it.
+         * If no cars are linked to the garage, it will proceed to delete the garage.
+         *
+         * @param garageName - The name of the garage to be deleted.
+         * @return true if the garage is successfully deleted, false otherwise.
+        **/
+        public static void deleteGarage(String garageName) {
+
+            if (canDeleteGarage(garageName)) {
+
+                // SQL syntax
+                String sql = "DELETE FROM GARAGES WHERE garage_name = ?";
+
+                try (Connection conn = CONNECTION_POOL.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                    // Set the garage name parameter
+                    stmt.setString(1, garageName);
+
+                    // Execute the delete query
+                    stmt.executeUpdate();
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
+
+        /**
          * Loads a list of garage names associated with the current user or optionally ignores user filtering.
          * @param ignoreUser - If true, the method ignores the user filter and loads all garages; otherwise, it filters by user.
          * @return a 2D array of garage names.
-         */
+        **/
         public static Object[][] loadGarageList(boolean ignoreUser) {
 
             List<Object[]> garageDataList = new ArrayList<>();
 
             // Get user db.id
             int userId = Mine.currentUser.getID();
+            if (Mine.currentUser.getUsername().equals("admin")) ignoreUser = true;
 
             // User not exists
             if (userId <= 0) {

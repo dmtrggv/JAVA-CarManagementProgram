@@ -33,10 +33,10 @@ public class CreateVehicleType extends Panels implements ActionListener {
         JPanel panel = createPanel();
 
         // Create car button
-        createButton(15, 15, 254, createCar = new JButton("Създай кола"), panel);
+        createCar = createButton(15, 15, 254, "Създай кола", panel);
 
         // Create motor button
-        createButton(15, 45, 254, createMotor = new JButton("Създай мотор"), panel);
+        createMotor = createButton(15, 45, 254, "Създай мотор", panel);
 
         frame.add(panel);
         frame.setVisible(true);

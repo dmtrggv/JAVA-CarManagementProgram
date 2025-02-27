@@ -1,10 +1,5 @@
 package use;
 
-/*
- * The Address class represents a physical address with attributes such as street type, street name, street number, town, and country.
- * It provides constructors to initialize the address and methods to get and set these attributes.
- */
-
 public class Address {
 
     private String streetType;
@@ -13,32 +8,41 @@ public class Address {
     private String town;
     private String country;
 
-    /*
-     * Create Address object with all attributes
-     */
     public Address(String streetType, String streetName, String streetNumber, String town, String country) {
+
         this.streetType = streetType;
         this.streetName = streetName;
         this.streetNumber = streetNumber;
         this.town = town;
         this.country = country;
+
     }
 
-    /*
-     * Create Address object from String
-     */
     public Address(String input) {
+
         String[] parts = input.split(", ");
         String streetInfo = parts[0].trim();
+
+        // Split the street info into the street type and the rest (street name + street number)
         String[] streetParts = streetInfo.split(" ", 2);
 
-        this.streetType = streetParts[0];
-        String[] nameAndNumber = streetParts[1].split(" ", 2);
-        this.streetName = nameAndNumber[0];
-        this.streetNumber = (nameAndNumber.length > 1) ? nameAndNumber[1] : "";
+        this.streetType = streetParts[0];  // street type (e.g., "ул.")
 
-        this.town = (parts.length > 1) ? parts[1] : "";
-        this.country = (parts.length > 2) ? parts[2] : "";
+        // If the second part of streetInfo exists, split it into street name and number
+        if (streetParts.length > 1) {
+            String[] nameAndNumber = streetParts[1].split("(?<=\\D)\\s+(?=\\d)", 2); // Split before the first number
+
+            this.streetName = nameAndNumber[0].trim();  // street name (may contain multiple words)
+            this.streetNumber = (nameAndNumber.length > 1) ? nameAndNumber[1].trim() : "";  // street number
+        } else {
+            this.streetName = "";
+            this.streetNumber = "";
+        }
+
+        // If there are more parts (town, country), assign them accordingly
+        this.town = (parts.length > 1) ? parts[1].trim() : "";
+        this.country = (parts.length > 2) ? parts[2].trim() : "";
+
     }
 
     //region Getters
@@ -93,4 +97,5 @@ public class Address {
     public String toString() {
         return this.streetType + " " + this.streetName + " " + this.streetNumber + ", " + this.town + ", " + this.country;
     }
+
 }

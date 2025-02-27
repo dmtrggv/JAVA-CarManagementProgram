@@ -15,9 +15,7 @@ public class CarInfo extends Panels implements ActionListener {
     private final boolean newCar;
 
     JDialog frame;
-    JButton             btnSave = new JButton("Запази промените");              // Save button
-    JButton             btnEdit = new JButton("Редактирай колата");             // Edit button
-    JButton             btnDelete = new JButton("Изтрий");                      // Delete button
+    JButton             btnSave, btnEdit, btnDelete;
     JButton             btnGenerateRegNumber = new JButton("Генерирай");        // Registration number generator button
     JTextField          txRegNumber = new JTextField();                              // Registration number
     JTextField          txMileage = new JTextField();                                // Mileage
@@ -41,7 +39,7 @@ public class CarInfo extends Panels implements ActionListener {
     JTextField          txDateWheelChangeM = new JTextField();
     JTextField          txDateWheelChangeY = new JTextField();
     JTextArea           txCarInfo = new JTextArea();                                 // Car info
-    JComboBox<String>   cbGarageList;                                                // Garage
+    JComboBox<String>   cbGarageList, cbUserList;
 
     public CarInfo(int x, int y, Car car, boolean editable, boolean startEmpty) {
 
@@ -57,7 +55,7 @@ public class CarInfo extends Panels implements ActionListener {
         } else frameTitle = "Добави кола";
 
         // Create frame
-        frame = initializeDialog(x, y, 530, 545, Mine.frame, frameTitle);
+        frame = initializeDialog(x, y, 530, 600, Mine.frame, frameTitle);
 
         // Panel
         JPanel panel = createPanel();
@@ -197,6 +195,7 @@ public class CarInfo extends Panels implements ActionListener {
         // Garages
         cbGarageList = new JComboBox<>();
         Object[][] garageData = DBFiles.garage.loadGarageList(false);
+        if (car != null && car.getGarage() != null && !DBFiles.car.getCarOwnerFullName(car.getRegistrationNumber().toString()).equals(Mine.currentUser.getNameFull())) cbGarageList.addItem(car.getGarage());
         for (Object[] garage : garageData) {
             cbGarageList.addItem((String) garage[0]);
         }
@@ -205,34 +204,33 @@ public class CarInfo extends Panels implements ActionListener {
                 cbGarageList, (car != null) ? car.getGarage() : null, editable
         );
 
+        // User
+        cbUserList = new JComboBox<>();
+        if (car != null && car.getRegistrationNumber() != null)
+            cbUserList.addItem(DBFiles.car.getCarOwnerFullName(car.getRegistrationNumber().toString()));
+        else cbUserList.addItem(Mine.currentUser.getNameFull());
+        createComboBox(
+                panel, 265, 460, "Собственик:",
+                cbUserList, null, false
+        );
+
         // Car info
         createTextArea(
-                panel, 15, 410, 65, "Описание за колата:",
+                panel, 15, 410, 115, "Описание за колата:",
                 txCarInfo, (car != null) ? car.getInfo() : null, editable, -1
         );
 
         //region Buttons
 
         // Save button
-        btnSave.setBounds(355, 470, 147, 25);
-        btnSave.addActionListener(this);
-        btnSave.setFocusable(true);
-        btnSave.setEnabled(true);
-        if (editable) panel.add(btnSave);
+        btnSave = createButton(355, 515, 147, "Запази промените", (editable) ? panel : null);
 
         // Edit button
-        btnEdit.setBounds(355, 470, 147, 25);
-        btnEdit.addActionListener(this);
-        btnEdit.setFocusable(true);
-        btnEdit.setEnabled(true);
-        if (!editable) panel.add(btnEdit);
+        btnEdit = createButton(355, 515, 147, "Редактирай колата", (!editable) ? panel : null);
 
         // Delete button
-        btnDelete.setBounds(266, 470, 80, 25);
-        btnDelete.addActionListener(this);
-        btnDelete.setFocusable(true);
+        btnDelete = createButton(266, 515, 80, "Изтрий", panel);
         btnDelete.setEnabled(!newCar);
-        panel.add(btnDelete);
 
         //endregion
 
@@ -338,8 +336,8 @@ public class CarInfo extends Panels implements ActionListener {
             );
 
             boolean checkNumbers = (
-                (!txMpg.getText().isEmpty() && Double.parseDouble(txMpg.getText()) > 0) &&
-                (!txGasTank.getText().isEmpty() && Double.parseDouble(txGasTank.getText()) > 0) &&
+                (!txMpg.getText().isEmpty() && (Double.parseDouble(txMpg.getText()) > 0 && Double.parseDouble(txMpg.getText()) <= 9999999.99)) &&
+                (!txGasTank.getText().isEmpty() && (Double.parseDouble(txGasTank.getText()) > 0 && Double.parseDouble(txGasTank.getText()) <= 9999999.99)) &&
                 (!txPower.getText().isEmpty() && Integer.parseInt(txPower.getText()) > 0)
             );
 
@@ -398,7 +396,7 @@ public class CarInfo extends Panels implements ActionListener {
                 String notDatesAgo =    (!checkDatesAgo) ? "- Датите за Каско и за ГТП не трябва да са в бъдещето!" + "\n" : "";
                 String notDatesFuture = (!checkDatesFuture) ? "- Датата за мяна на гуми, не трябва да е минала!" + "\n" : "";
                 String notYears =       (!checkYears) ? "- Годините не могат да са отрицателни числа!" + "\n" : "";
-                String notNumbers =     (!checkNumbers) ? "- Числата рябва да са задължително по-големи от нула!" + "\n" : "";
+                String notNumbers =     (!checkNumbers) ? "- Числата рябва да са задължително по-големи от нула!" + "\n" + "- Резервоарът и Разхода не могата да са по-големи от 9999999.99!" : "";
 
                 JOptionPane.showMessageDialog(frame, notFull + notDatesAgo + notDatesFuture + notYears + notNumbers);
 

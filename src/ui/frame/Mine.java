@@ -19,112 +19,86 @@ public class Mine extends Panels implements ActionListener {
     //region Menu bar
 
     // Profile menu
-    JMenu     menuProfile = new JMenu("Профил");
+    JMenu menuProfile = new JMenu("Профил");
     JMenuItem menuProfileSwitchUser = new JMenuItem("Влиане в друг профил");
     JMenuItem menuProfileLogout = new JMenuItem("Излизане и затвори");
     JMenuItem menuProfileEditUser = new JMenuItem("Редактиране на потребителя");
 
     // Garage menu
-    JMenu     menuGarage = new JMenu("Гараж");
+    JMenu menuGarage = new JMenu("Гараж");
     JMenuItem menuGarageAdd = new JMenuItem("Добавяне на гараж");
     JMenuItem menuGarageEdit = new JMenuItem("Отваряне на гараж");
 
-    // Vehicles
-    JMenu     menuVehicles = new JMenu("МПС");
+    // Vehicles menu
+    JMenu menuVehicles = new JMenu("МПС");
     JMenuItem menuVehiclesAdd = new JMenuItem("Добавяне на ново МПС");
     JMenuItem menuVehiclesSearch = new JMenuItem("Търсене на МПС-та");
 
-    // About
-    JMenu     menuMore = new JMenu("Още");
+    // About menu
+    JMenu menuMore = new JMenu("Още");
     JMenuItem menuMoreSettings = new JMenuItem("Настройки");
     JMenuItem menuMoreAbout = new JMenuItem("Относно програмата");
 
     //endregion
 
+    /**
+     * Constructor for the Mine class.
+     * Initializes the main user interface and menu options based on the provided user.
+     *
+     * @param user The current logged-in user
+    **/
     public Mine(User user) {
 
-        // Create the user
         currentUser = new User(user);
-
-        // Create frame
         frame = initializeFrame(-1, -1, 1100, 650, Constants.app.APP_NAME + " - " + currentUser.getUsername() + " - " + currentUser.getNameFull() + " - " + Constants.app.DEVELOPER + "@" + Constants.app.DEV_STUDIO);
 
-        // Panel
-        JPanel panel = new JPanel();
+        JPanel panel = createPanel();
         panel.setBackground(Color.CYAN);
-        panel.setLayout(null);
 
         // Create menu bar
         JMenuBar menuBar = new JMenuBar();
 
-        //region Menu - profile
+        // Set up profile menu
+        setupMenu(menuProfile, new JMenuItem[]{ menuProfileSwitchUser, menuProfileLogout, menuProfileEditUser }, menuBar);
 
-        // Add listeners
-        menuProfileSwitchUser.addActionListener(this);
-        menuProfileLogout.addActionListener(this);
-        menuProfileEditUser.addActionListener(this);
+        // Set up garage menu
+        setupMenu(menuGarage, new JMenuItem[]{ menuGarageAdd, menuGarageEdit }, menuBar);
 
-        // Add options
-        menuProfile.add(menuProfileSwitchUser);
-        menuProfile.add(menuProfileLogout);
-        menuProfile.add(menuProfileEditUser);
+        // Set up vehicles menu
+        setupMenu(menuVehicles, new JMenuItem[]{ menuVehiclesAdd, menuVehiclesSearch }, menuBar);
 
-        // Add menu
-        menuBar.add(menuProfile);
+        // Set up more menu
+        setupMenu(menuMore, new JMenuItem[]{ menuMoreSettings, menuMoreAbout }, menuBar);
 
-        //endregion
-
-        //region Menu - garage
-
-        // Add listeners
-        menuGarageAdd.addActionListener(this);
-        menuGarageEdit.addActionListener(this);
-
-        // Add options
-        menuGarage.add(menuGarageAdd);
-        menuGarage.add(menuGarageEdit);
-
-        // Add menu
-        menuBar.add(menuGarage);
-
-        //endregion
-
-        //region Menu - vehicles
-
-        // Add listeners
-        menuVehiclesAdd.addActionListener(this);
-        menuVehiclesSearch.addActionListener(this);
-
-        // Add options
-        menuVehicles.add(menuVehiclesAdd);
-        menuVehicles.add(menuVehiclesSearch);
-
-        // Add more
-        menuBar.add(menuVehicles);
-
-        //endregion
-
-        //region Menu - more
-
-        // Add listeners
-        menuMoreSettings.addActionListener(this);
-        menuMoreAbout.addActionListener(this);
-
-        // Add options
-        if (currentUser.getUsername().equals("admin")) menuMore.add(menuMoreSettings);
-        menuMore.add(menuMoreAbout);
-
-        // Add menu
-        menuBar.add(menuMore);
-
-        //endregion
-
+        // Add to frame
         frame.add(panel);
         frame.setJMenuBar(menuBar);
         frame.setVisible(true);
 
     }
 
+    /**
+     * Helper method to set up menu options for a given menu.
+     *
+     * @param menu The menu to configure
+     * @param items Array of items
+     * @param menuBar The menu bar to add the menu to
+    **/
+    private void setupMenu(JMenu menu, JMenuItem[] items, JMenuBar menuBar) {
+
+        for (int i = 0; i < items.length; i++) {
+            items[i].addActionListener(this);
+            menu.add(items[i]);
+        }
+
+        menuBar.add(menu);
+
+    }
+
+    /**
+     * Handles the actions triggered by menu items.
+     * Based on the event, performs the corresponding action like switching user, logging out, or opening dialogs.
+    **/
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -153,7 +127,8 @@ public class Mine extends Panels implements ActionListener {
             // Edit user
             int xStart = (frame.getX() + frame.getWidth()) / 2;
             int yStart = ((frame.getY() + frame.getHeight()) / 2) + 50;
-            new VerifyAdmin(xStart, yStart, frame, "edituser");
+            if (Mine.currentUser.getUsername().equals("admin")) new UserInfo(xStart, yStart, false);
+            else new VerifyAdmin(xStart, yStart, frame, "edituser");
 
         }
 

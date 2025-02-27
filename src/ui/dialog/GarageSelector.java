@@ -26,22 +26,26 @@ public class GarageSelector extends Panels implements ActionListener {
 
         // Garage selector
         cbGarageList = new JComboBox<>();
-        Object[][] garageData = DBFiles.garage.loadGarageList(false);
-        for (Object[] garage : garageData) {
-            cbGarageList.addItem((String) garage[0]);
-        }
+        loadGarages();
         createComboBox(
                 panel, 15, 10, "Избери:",
                 cbGarageList, null, true
         );
 
         // Open garage button
-        createButton(15, 65, 237, btnOpen = new JButton("Отвори"), panel);
+        btnOpen = createButton(15, 65, 237, "Отвори", panel);
 
         // Add to frame
         frame.add(panel);
         frame.setVisible(true);
 
+    }
+
+    private void loadGarages() {
+        Object[][] garageData = DBFiles.garage.loadGarageList(false);
+        for (Object[] garage : garageData) {
+            cbGarageList.addItem((String) garage[0]);
+        }
     }
 
     @Override

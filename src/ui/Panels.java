@@ -152,11 +152,13 @@ public abstract class Panels {
      * @param button - the JButton to be created.
      * @param panelParent - the parent JPanel where the button should be added.
      */
-    protected void createButton(int x, int y, int width, JButton button, JPanel panelParent) {
+    protected JButton createButton(int x, int y, int width, String name, JPanel panelParent) {
+        JButton button = new JButton(name);
         button.setBounds(x, y, width, 30);
         button.addActionListener((ActionListener) this);
         button.setFocusable(true);
-        panelParent.add(button);
+        if (panelParent != null) panelParent.add(button);
+        return button;
     }
 
     /*

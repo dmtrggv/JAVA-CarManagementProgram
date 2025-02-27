@@ -18,9 +18,7 @@ public class VehicleSearch extends Panels implements ActionListener {
     private boolean isTableCreated = false;
 
     JDialog frame;
-    JButton btnSearch = new JButton("Търси");
-    JButton btnClear = new JButton("Изчисти търсенето");
-    JButton btnView = new JButton("Отвори");
+    JButton btnSearch, btnClear, btnView;
     JTextField txSearchByRegNum = new JTextField();
     JCheckBox chSearchByRegNum = new JCheckBox();
     JTextField txSearchByBrand = new JTextField();
@@ -79,13 +77,13 @@ public class VehicleSearch extends Panels implements ActionListener {
         createSearchBy(560, 32, "Регистр.:", txSearchByRegistration, Constants.filter.FILTER_INTEGER, chSearchByRegistration, panelSearch);
 
         // Search button
-        createButton(panelBottom.getWidth() - 105, 5, 80, btnSearch, panelBottom);
+        btnSearch = createButton(panelBottom.getWidth() - 105, 5, 80, "Търси", panelBottom);
 
         // Clear search button
-        createButton(panelBottom.getWidth() - 260, 5, 150, btnClear, panelBottom);
+        btnClear = createButton(panelBottom.getWidth() - 260, 5, 150, "Изчисти търсенето", panelBottom);
 
         // Edit button
-        createButton(panelBottom.getWidth() - 385, 5, 120, btnView, panelBottom);
+        btnView = createButton(panelBottom.getWidth() - 385, 5, 120, "Отвори", panelBottom);
 
         panel.add(panelTable);
         frame.add(panel);

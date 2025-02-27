@@ -6,6 +6,7 @@ import use.Constants;
 import use.DBFiles;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -13,9 +14,7 @@ public class GarageInfo extends Panels implements ActionListener {
 
     Garage currentGarage;
     JDialog frame;
-    JButton btnEdit = new JButton("Редатиране");
-    JButton btnSave = new JButton("Запазване");
-    JButton btnSeeCars = new JButton("Виж МПС-тата");
+    JButton btnEdit, btnSave, btnSeeCars, btnDelete;
     JTextField txGarageName = new JTextField();
 
     public GarageInfo(int x, int y, Garage garage, boolean editable) {
@@ -24,7 +23,7 @@ public class GarageInfo extends Panels implements ActionListener {
         currentGarage = garage;
 
         // Create frame
-        frame = initializeDialog(x, y, 280, 185, Mine.frame, "Моят гараж");
+        frame = initializeDialog(x, y, 280, 230, Mine.frame, "Моят гараж");
 
         // Panel
         JPanel panel = createPanel();
@@ -37,23 +36,18 @@ public class GarageInfo extends Panels implements ActionListener {
         );
 
         // See vehicles
-        btnSeeCars.setBounds(15, 60, 237, 25);
-        btnSeeCars.addActionListener(this);
-        btnSeeCars.setFocusable(true);
+        btnSeeCars = createButton(15, 60, 237, "Виж МПС-тата", panel);
         btnSeeCars.setEnabled(!editable && garage != null);
-        panel.add(btnSeeCars);
 
         // Save
-        btnSave.setBounds(15, 110, 237, 25);
-        btnSave.addActionListener(this);
-        btnSave.setFocusable(true);
-        if (editable) panel.add(btnSave);
+        btnSave = createButton(15, 150, 237, "Запазване", (editable) ? panel : null);
 
         // Save
-        btnEdit.setBounds(15, 110, 237, 25);
-        btnEdit.addActionListener(this);
-        btnEdit.setFocusable(true);
-        if (!editable) panel.add(btnEdit);
+        btnEdit = createButton(15, 150, 237, "Редатиране", (!editable) ? panel : null);
+
+        // Delete
+        btnDelete = createButton(15, 115, 237, "Изтриване", panel);
+        btnDelete.setEnabled(editable && garage != null);
 
         // Add frame
         frame.add(panel);
@@ -105,6 +99,20 @@ public class GarageInfo extends Panels implements ActionListener {
 
             new GarageInfo(xStart, yStart, garage, true);
             frame.dispose();
+
+        }
+
+        // Delete garage
+        if (e.getSource() == btnDelete) {
+
+            if (DBFiles.garage.canDeleteGarage(txGarageName.getText())) {
+
+                JOptionPane.showMessageDialog(frame, "Ти току що изтри гараж " + txGarageName.getText() + "!");
+                DBFiles.garage.deleteGarage(txGarageName.getText());
+                frame.dispose();
+
+            }
+            else JOptionPane.showMessageDialog(frame, "Не можеш да изтриеш гараж, в който има регистрирани коли! Или ги изтрий, или им смени гаража.");
 
         }
 

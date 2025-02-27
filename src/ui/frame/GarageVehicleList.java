@@ -35,7 +35,7 @@ public class GarageVehicleList extends Panels implements ActionListener {
         JPanel panelBottom = createPanelExt(0, frame.getHeight() - 80, frame.getWidth(), 60, Color.lightGray, panel);
 
         // Open button
-        createButton(panelBottom.getWidth() - 105, 5, 80, btnOpen, panelBottom);
+        btnOpen = createButton(panelBottom.getWidth() - 105, 5, 80, "Отвори", panelBottom);
 
         // Table
         createSearchTable(Mine.currentUser.getUsername(), garageName);
@@ -78,6 +78,8 @@ public class GarageVehicleList extends Panels implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
+
 
     }
 
