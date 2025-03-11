@@ -61,7 +61,10 @@ public class Mine extends Panels implements ActionListener {
         JMenuBar menuBar = new JMenuBar();
 
         // Set up profile menu
-        setupMenu(menuProfile, new JMenuItem[]{ menuProfileSwitchUser, menuProfileLogout, menuProfileEditUser, menuProfileNewUser }, menuBar);
+        JMenuItem[] itemlistProfile;
+        if (currentUser.getUsername().equals("admin")) itemlistProfile = { menuProfileSwitchUser, menuProfileLogout, menuProfileEditUser, menuProfileNewUser };
+        else itemlistProfile = { menuProfileSwitchUser, menuProfileLogout, menuProfileEditUser };
+        setupMenu(menuProfile, itemlistProfile, menuBar);
 
         // Set up garage menu
         setupMenu(menuGarage, new JMenuItem[]{ menuGarageAdd, menuGarageEdit }, menuBar);
@@ -70,7 +73,10 @@ public class Mine extends Panels implements ActionListener {
         setupMenu(menuVehicles, new JMenuItem[]{ menuVehiclesAdd, menuVehiclesSearch }, menuBar);
 
         // Set up more menu
-        setupMenu(menuMore, new JMenuItem[]{ menuMoreSettings, menuMoreAbout }, menuBar);
+        JMenuItem[] itemlistMore;
+        if (currentUser.getUsername().equals("admin")) itemlistMore = { menuMoreSettings, menuMoreAbout };
+        else itemlistMore = { menuMoreAbout };
+        setupMenu(menuMore, itemlistMore, menuBar);
 
         // Add to frame
         frame.add(panel);
@@ -129,8 +135,17 @@ public class Mine extends Panels implements ActionListener {
             // Edit user
             int xStart = (frame.getX() + frame.getWidth()) / 2;
             int yStart = ((frame.getY() + frame.getHeight()) / 2) + 50;
-            if (Mine.currentUser.getUsername().equals("admin")) new UserInfo(xStart, yStart, false);
-            else new VerifyAdmin(xStart, yStart, frame, "edituser");
+            new UserInfo(xStart, yStart, false);
+
+        }
+
+        // Add new user
+        if (e.getSource() == menuProfileNewUser) {
+
+            // Add new user
+            int xStart = (frame.getX() + frame.getWidth()) / 2;
+            int yStart = ((frame.getY() + frame.getHeight()) / 2) + 50;
+            new UserInfo(xStart, yStart, true);
 
         }
 
