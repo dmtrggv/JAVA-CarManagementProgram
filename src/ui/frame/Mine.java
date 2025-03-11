@@ -51,7 +51,8 @@ public class Mine extends Panels implements ActionListener {
 
         currentUser = new User(user);
         frame = initializeFrame(-1, -1, 1100, 650, Constants.app.APP_NAME + " - " + currentUser.getUsername() + " - " + currentUser.getNameFull() + " - " + Constants.app.DEVELOPER + "@" + Constants.app.DEV_STUDIO);
-
+        frame.setResizable(true);
+        
         JPanel panel = createPanel();
         panel.setBackground(Color.CYAN);
 
