@@ -7,7 +7,7 @@ public class Constants {
         public static final String DEVELOPER = "Dimitar Gogov";
         public static final String DB_DEVELOPER = "Radoslav Politov";
         public static final String DEV_STUDIO = "KRAVA TECHNOLOGIES LLC.";
-        public static final String RELEASE_YEAR = "2024";
+        public static final String RELEASE_YEAR = "2025";
     }
 
     public class filter {
