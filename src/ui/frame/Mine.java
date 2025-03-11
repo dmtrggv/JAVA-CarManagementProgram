@@ -23,6 +23,7 @@ public class Mine extends Panels implements ActionListener {
     JMenuItem menuProfileSwitchUser = new JMenuItem("Влиане в друг профил");
     JMenuItem menuProfileLogout = new JMenuItem("Излизане и затвори");
     JMenuItem menuProfileEditUser = new JMenuItem("Редактиране на потребителя");
+    JMenuItem menuProfileNewUser = new JMenuItem("Добавяне на нов потребител");
 
     // Garage menu
     JMenu menuGarage = new JMenu("Гараж");
@@ -60,7 +61,7 @@ public class Mine extends Panels implements ActionListener {
         JMenuBar menuBar = new JMenuBar();
 
         // Set up profile menu
-        setupMenu(menuProfile, new JMenuItem[]{ menuProfileSwitchUser, menuProfileLogout, menuProfileEditUser }, menuBar);
+        setupMenu(menuProfile, new JMenuItem[]{ menuProfileSwitchUser, menuProfileLogout, menuProfileEditUser, menuProfileNewUser }, menuBar);
 
         // Set up garage menu
         setupMenu(menuGarage, new JMenuItem[]{ menuGarageAdd, menuGarageEdit }, menuBar);
