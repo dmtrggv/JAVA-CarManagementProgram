@@ -18,10 +18,9 @@ public class Signin extends Panels implements ActionListener {
     public static JFrame frame;
     JButton buttLanguage = new JButton("BG");
     JButton buttLogin = new JButton("Влез");
-    JButton buttCreateAccount = new JButton("Създай профил");
     JTextField txUsername = new JTextField();
     JPasswordField txPassword = new JPasswordField();
-    JLabel creator = new JLabel("Created by " + Constants.app.DEVELOPER + ", 2101261032");
+    JLabel creator = new JLabel("Създадено от " + Constants.app.DEVELOPER + ", 2101261032");
     JLabel copyright = new JLabel(Constants.app.APP_NAME + " v1.0.0 © Copyright " + Constants.app.RELEASE_YEAR);
     JCheckBox viewPassword = new JCheckBox("показване на паролата");
 
@@ -65,12 +64,6 @@ public class Signin extends Panels implements ActionListener {
         buttLogin.addActionListener(this);
         buttLogin.setFocusable(true);
 
-        // Close button
-        buttCreateAccount.setBounds(17, 260, 300, 40);
-        buttCreateAccount.setFocusable(false);
-        buttCreateAccount.addActionListener(this);
-        buttCreateAccount.setFocusable(true);
-
         // Creator
         creator.setFont(new Font("Sans Serif", Font.BOLD, 12));
         creator.setForeground(Color.gray);
@@ -87,7 +80,6 @@ public class Signin extends Panels implements ActionListener {
         panel.add(txPassword);
         panel.add(viewPassword);
         panel.add(buttLogin);
-        panel.add(buttCreateAccount);
         panel.add(creator);
         panel.add(copyright);
         frame.add(panel);
@@ -150,14 +142,7 @@ public class Signin extends Panels implements ActionListener {
             } else JOptionPane.showMessageDialog(frame, "Полетата са задължителни!");
 
         }
-
-        // Register new user
-        if (e.getSource() == buttCreateAccount) {
-
-            int xStart = (frame.getX() + frame.getWidth()) / 2;
-            int yStart = ((frame.getY() + frame.getHeight()) / 2) + 50;
-            new VerifyAdmin(xStart, yStart, frame, "register");
-
-        }
+        
     }
+    
 }
