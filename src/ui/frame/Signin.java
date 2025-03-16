@@ -28,7 +28,7 @@ public class Signin extends Panels implements ActionListener {
 
         // Create frame
         setPanelExist(true);
-        frame = initializeFrame(xStart, yStart, 350, 400, "Влез в профил");
+        frame = initializeFrame(xStart, yStart, 350, 350, "Влез в профил");
 
         // Panel
         JPanel panel = new JPanel();

@@ -62,8 +62,8 @@ public class Mine extends Panels implements ActionListener {
 
         // Set up profile menu
         JMenuItem[] itemlistProfile;
-        if (currentUser.getUsername().equals("admin")) itemlistProfile = { menuProfileSwitchUser, menuProfileLogout, menuProfileEditUser, menuProfileNewUser };
-        else itemlistProfile = { menuProfileSwitchUser, menuProfileLogout, menuProfileEditUser };
+        if (currentUser.getUsername().equals("admin")) itemlistProfile = new JMenuItem[]{ menuProfileSwitchUser, menuProfileLogout, menuProfileEditUser, menuProfileNewUser };
+        else itemlistProfile = new JMenuItem[]{ menuProfileSwitchUser, menuProfileLogout, menuProfileEditUser };
         setupMenu(menuProfile, itemlistProfile, menuBar);
 
         // Set up garage menu
@@ -74,8 +74,8 @@ public class Mine extends Panels implements ActionListener {
 
         // Set up more menu
         JMenuItem[] itemlistMore;
-        if (currentUser.getUsername().equals("admin")) itemlistMore = { menuMoreSettings, menuMoreAbout };
-        else itemlistMore = { menuMoreAbout };
+        if (currentUser.getUsername().equals("admin")) itemlistMore = new JMenuItem[]{ menuMoreSettings, menuMoreAbout };
+        else itemlistMore = new JMenuItem[]{ menuMoreAbout };
         setupMenu(menuMore, itemlistMore, menuBar);
 
         // Add to frame
