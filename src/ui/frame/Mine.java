@@ -4,7 +4,6 @@ import components.User;
 import ui.Panels;
 import ui.dialog.CreateVehicleType;
 import ui.dialog.GarageSelector;
-import ui.dialog.VerifyAdmin;
 import use.Constants;
 import javax.swing.*;
 import java.awt.*;
@@ -196,6 +195,13 @@ public class Mine extends Panels implements ActionListener {
         //endregion
 
         //region More menu
+
+        // About menu
+        if (e.getSource() == menuMoreAbout) {
+
+            new AboutProgram();
+
+        }
 
         // Settings
         if (e.getSource() == menuMoreSettings) {

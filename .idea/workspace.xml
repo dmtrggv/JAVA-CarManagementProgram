@@ -5,14 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0e98d4cf-8c5d-491f-9363-04f1265dff43" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/ui/frame/AboutProgram.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/files/db/test.mv.db" beforeDir="false" afterPath="$PROJECT_DIR$/files/db/test.mv.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/files/db/test.trace.db" beforeDir="false" afterPath="$PROJECT_DIR$/files/db/test.trace.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/JAVA-CarManagementProgram-1/use/h2-1.4.199.jar" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/frame/Mine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/frame/Mine.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/frame/Signin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/frame/Signin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/frame/UserInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/frame/UserInfo.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -23,12 +35,12 @@
     &quot;assignee&quot;: &quot;dmtrggv&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/dmtrggv/JAVA-CarManagementProgram.git&quot;,
-    &quot;accountId&quot;: &quot;a1338e1a-36b2-4c99-9f06-9a6089d1c02e&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/dmtrggv/JAVA-CarManagementProgram.git",
+    "accountId": "cf538860-4f2d-472c-a50c-5cff76df90ba"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
 }</component>
@@ -39,8 +51,9 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.App.executor": "Debug",
+    "Application.App.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true"
   }
@@ -48,12 +61,6 @@
   <component name="RunManager">
     <configuration name="App" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="App" />
-      <module name="JAVA-CarManagementProgram" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="JetRunConfigurationType">
       <module name="JAVA-CarManagementProgram" />
       <method v="2">
         <option name="Make" enabled="true" />

@@ -2922,3 +2922,6 @@ DELETE FROM GARAGES WHERE name = ? [42122-199]
 	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
 	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
 	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+2025-03-16 19:40:29 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "GARAGE" not found; SQL statement:
+SELECT * FROM garage [42102-199]

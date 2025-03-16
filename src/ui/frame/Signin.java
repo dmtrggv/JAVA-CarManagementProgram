@@ -20,7 +20,7 @@ public class Signin extends Panels implements ActionListener {
     JButton buttLogin = new JButton("Влез");
     JTextField txUsername = new JTextField();
     JPasswordField txPassword = new JPasswordField();
-    JLabel creator = new JLabel("Създадено от " + Constants.app.DEVELOPER + ", 2101261032");
+    JLabel creator = new JLabel("Създадено от " + Constants.app.DEVELOPER + " и " + Constants.app.DB_DEVELOPER);
     JLabel copyright = new JLabel(Constants.app.APP_NAME + " v1.0.0 © Copyright " + Constants.app.RELEASE_YEAR);
     JCheckBox viewPassword = new JCheckBox("показване на паролата");
 

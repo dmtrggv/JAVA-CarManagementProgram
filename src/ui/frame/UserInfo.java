@@ -105,7 +105,7 @@ public class UserInfo extends Panels implements ActionListener {
         parentPanel.add(label);
 
         // Text field setup
-        textField.setBounds(x, y + 20, 200, 25);
+        textField.setBounds(x, y + 20, 237, 25);
         textField.setEnabled(editable);
         textField.setDisabledTextColor(Color.darkGray);
 
