@@ -9,7 +9,7 @@ public class AboutProgram extends Panels {
 
     public AboutProgram() {
 
-        JDialog dialog = initializeDialog(-1, -1, 350, 170, Mine.frame, "Информация за приложението");
+        JDialog dialog = initializeDialog(-1, -1, 350, 170, Mine.frame, "Относно програмата");
         JPanel panel = createPanel();
         panel.setLayout(new GridLayout(4, 1, 10, 10));
 
