@@ -1,6 +1,9 @@
 # Car Management Application
 A desktop application designed for managing cars and garages, built using Java and Swing. This project demonstrates my skills in Java development, specifically focusing on the management of vehicles, garage spaces, and related operations.
 
+<img width="1920" height="1080" alt="{2558E56E-E3B9-48D8-8BBC-90ADD1DDC839}" src="https://github.com/user-attachments/assets/f68a5820-aed5-401f-8f1e-d8c43304f47a" />
+
+
 ## About the Project
 This project implements a simple system for managing cars and garages, allowing users to manage vehicle information, track garage availability, and manage vehicle parking assignments. The application is developed using Java Swing for the graphical user interface (GUI), along with additional libraries for file management and utility functions. It was created as part of my university coursework to showcase my practical skills in desktop application development.
 
